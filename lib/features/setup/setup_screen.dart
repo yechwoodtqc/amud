@@ -283,13 +283,12 @@ class _SiddurPage extends ConsumerWidget {
         else
           Card(
             clipBehavior: Clip.antiAlias,
-            child: RadioGroup<String>(
-              groupValue: current,
-              onChanged: (v) => set((x) => x.copyWith(defaultBook: () => v)),
-              child: Column(children: [
+            child: Column(children: [
                 for (final b in manifest.books)
                   RadioListTile<String>.adaptive(
                     value: b.title,
+                    groupValue: current,
+                    onChanged: (v) => set((x) => x.copyWith(defaultBook: () => v)),
                     title: SplitRow(crossAxisAlignment: CrossAxisAlignment.center, children: [
                       Text(context.term(b.title)),
                       Text(b.heTitle, textDirection: TextDirection.rtl, style: TextStyle(fontFamily: s.hebrewFont, fontSize: 16)),
