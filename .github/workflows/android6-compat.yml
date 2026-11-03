@@ -26,12 +26,12 @@ jobs:
           cache: true
       - name: Resolve dependencies
         run: flutter pub get
-      - name: Build API 23 APK
-        run: flutter build apk --release --flavor github --target-platform android-arm,android-arm64
+      - name: Build API 23 APK for LG Exalt (32-bit ARM)
+        run: flutter build apk --release --flavor github --target-platform android-arm
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: amud-android6-api23
+          name: amud-lg-exalt-android6-armv7
           path: build/app/outputs/flutter-apk/app-github-release.apk
           if-no-files-found: error
           retention-days: 14
