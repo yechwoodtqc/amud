@@ -6,12 +6,12 @@ plugins {
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Android plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 // Release signing: android/key.properties locally, or SIDDUR_KEYSTORE_*
-// environment variables in CI (see signingConfigs below).
+ // environment variables in CI (see signingConfigs below).
 val keyProps = Properties().apply {
     val f = rootProject.file("key.properties")
     if (f.exists()) f.inputStream().use { load(it) }
@@ -20,6 +20,8 @@ fun keyValue(prop: String, env: String): String? = keyProps.getProperty(prop) ?:
 val storeFilePath = keyValue("storeFile", "SIDDUR_KEYSTORE_FILE")
 
 android {
+    // Keep the Android namespace for existing Kotlin/manifest class names.
+    // The installed application package is com.lge.amud.
     namespace = "page.amud"
     // in_app_update 4.2.5 requires compile SDK 36; this does not raise minSdk.
     compileSdk = maxOf(flutter.compileSdkVersion, 36)
@@ -37,9 +39,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "page.amud"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        applicationId = "com.lge.amud"
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
