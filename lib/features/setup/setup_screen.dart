@@ -295,7 +295,6 @@ class _SiddurPage extends ConsumerWidget {
                     ]),
                   ),
               ]),
-            ),
           ),
         const _Label('Prayer text'),
         _Choice<TextLayout>(
