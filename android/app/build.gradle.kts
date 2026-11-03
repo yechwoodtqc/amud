@@ -21,7 +21,8 @@ val storeFilePath = keyValue("storeFile", "SIDDUR_KEYSTORE_FILE")
 
 android {
     namespace = "page.amud"
-    compileSdk = flutter.compileSdkVersion
+    // in_app_update 4.2.5 requires compile SDK 36; this does not raise minSdk.
+    compileSdk = maxOf(flutter.compileSdkVersion, 36)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -81,7 +82,14 @@ android {
 
 // A Play release signed with the debug key would be rejected on upload.
 gradle.taskGraph.whenReady {
-    if (storeFilePath == null && allTasks.any { it.name.contains("PlayRelease") || it.name.contains("WearRelease") }) {
+    // Inspect the requested variant, not all configured flavor tasks. Gradle
+    // includes signing tasks for other flavors in the graph even for a GitHub build.
+    val requestedRelease = gradle.startParameter.taskNames
+    val isPlayOrWearRelease = requestedRelease.any {
+        it.contains("PlayRelease", ignoreCase = true) ||
+            it.contains("WearRelease", ignoreCase = true)
+    }
+    if (storeFilePath == null && isPlayOrWearRelease) {
         throw GradleException("Play releases need the upload key: set android/key.properties or SIDDUR_KEYSTORE_FILE.")
     }
 }
