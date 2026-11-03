@@ -232,7 +232,7 @@ class _ConverterState extends ConsumerState<ShiurimConverter> {
         Expanded(
           child: DropdownButtonFormField<String>(
             key: ValueKey('from-${m.id}-$_from'),
-            initialValue: _from,
+            value: _from,
             isExpanded: true,
             decoration: InputDecoration(labelText: context.tr('From'), border: const OutlineInputBorder()),
             items: [for (final u in m.units) item(u)],
@@ -251,7 +251,7 @@ class _ConverterState extends ConsumerState<ShiurimConverter> {
         Expanded(
           child: DropdownButtonFormField<String>(
             key: ValueKey('to-${m.id}-$_to'),
-            initialValue: _to,
+            value: _to,
             isExpanded: true,
             decoration: InputDecoration(labelText: context.tr('To'), border: const OutlineInputBorder()),
             items: [for (final u in m.units) item(u)],
