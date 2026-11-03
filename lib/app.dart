@@ -1,11 +1,11 @@
 import 'package:cupertino_native_better/cupertino_native_better.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/analytics.dart';
+import 'core/dpad_navigation.dart';
 import 'features/integrations/reader_device.dart';
 import 'features/personal_dates/personal_dates_screen.dart';
 import 'features/js_cards/card_gallery_screen.dart';
@@ -326,19 +326,11 @@ class SiddurApp extends ConsumerWidget {
       locale: s.uiLanguage.locale,
       localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: [for (final l in UiLanguage.values) l.locale],
-      builder: (context, child) => FocusTraversalGroup(
-        policy: ReadingOrderTraversalPolicy(),
-        child: Shortcuts(
-          // Android reports the hardware D-pad center/OK key as SELECT.
-          // Flutter's normal Enter and Space activation shortcuts remain intact.
-          shortcuts: const {
-            SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
-          },
-          child: AppText(
-            lang: s.uiLanguage,
-            ashkenazi: s.ashkenaziSpelling,
-            child: ReaderDevice(child: LaunchAnimation(child: child!)),
-          ),
+      builder: (context, child) => DpadNavigation(
+        child: AppText(
+          lang: s.uiLanguage,
+          ashkenazi: s.ashkenaziSpelling,
+          child: ReaderDevice(child: LaunchAnimation(child: child!)),
         ),
       ),
     );
