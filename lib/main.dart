@@ -25,6 +25,11 @@ import 'features/integrations/seasonal_windows.dart';
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Show focus indicators at all times on Android hardware-keyboard devices.
+  // A D-pad has no pointer hover state, so focus must remain visible.
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    FocusManager.instance.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
+  }
   if (!kIsWeb) AppLinks(); // Capture a cold-start link before asynchronous initialization.
   initHebcal(); // IANA tz database + learning schedules
   final storage = await Storage.open();
