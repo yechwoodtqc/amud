@@ -102,7 +102,6 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
       final saved = await FilePicker.platform.saveFile(
         fileName: 'amud-settings-${d.year}-${two(d.month)}-${two(d.day)}.json',
         bytes: bytes,
-        mimeType: 'application/json',
         type: FileType.custom,
         allowedExtensions: const ['json'],
       );
