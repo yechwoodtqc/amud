@@ -1,0 +1,9 @@
+name: cupertino_native_better
+description: Android 6 compatibility shim for Amud's iOS-only native Cupertino widgets.
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
