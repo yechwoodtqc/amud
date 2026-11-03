@@ -44,7 +44,7 @@ class MainActivity : FlutterActivity() {
         // Android 15 draws every app edge to edge; do the same on older versions
         // so the layout is one thing everywhere. Flutter pads for the system bars
         // itself (MediaQuery / SafeArea, Scaffold, AppBar and NavigationBar).
-        androidx.core.view.WindowCompat.enableEdgeToEdge(window)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
     }
     override fun onDestroy() {
