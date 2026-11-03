@@ -106,6 +106,10 @@ ThemeData buildTheme(AppSettings s, Brightness brightness) {
     colorScheme: scheme,
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
+    // Make keyboard/D-pad focus unmistakable throughout Material controls.
+    // FocusHighlightStrategy is set to alwaysTraditional on Android so this
+    // overlay is shown even without a mouse or touch interaction.
+    focusColor: scheme.primary.withValues(alpha: 0.28),
     // The interface is set in San Francisco on Apple platforms, as native
     // apps are; the Latin font the reader picked is for the texts.
     fontFamily: isCupertinoPlatform ? null : s.latinFont,
