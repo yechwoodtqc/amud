@@ -12,7 +12,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  # UIKit controls (tab bar, alerts) in Liquid Glass on iOS 26.
   cupertino_native_better: ^1.7.0
   hebcal:
     path: packages/hebcal
@@ -51,8 +50,7 @@ dependencies:
   printing: ^5.14.0
   in_app_update: ^4.2.5
   cryptography: ^2.9.0
-  video_player: ^2.11.1
-  # video_player's player on Linux and Windows (packages/fvp/VENDORED.md).
+  video_player: ^2.10.1
   fvp:
     path: packages/fvp
 
@@ -60,7 +58,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  video_player_platform_interface: ^6.8.0
+  video_player_platform_interface: ^6.6.0
 
 flutter:
   uses-material-design: true
@@ -73,7 +71,6 @@ flutter:
     - assets/fonts/
     - assets/tehillim/
   fonts:
-    # Only "amud" (the wordmark in the launch animation).
     - family: Fraunces
       fonts:
         - asset: assets/fonts/Fraunces-Amud.ttf
@@ -84,7 +81,6 @@ flutter:
     - family: NotoSerifHebrew
       fonts:
         - asset: assets/fonts/NotoSerifHebrew.ttf
-    # Rashi script, for Rashi's commentary in Shnayim Mikra.
     - family: NotoRashiHebrew
       fonts:
         - asset: assets/fonts/NotoRashiHebrew-Regular.ttf
