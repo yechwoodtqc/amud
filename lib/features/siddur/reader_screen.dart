@@ -320,8 +320,6 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
 
     return CallbackShortcuts(
       bindings: {
-        for (var i = 0; i < 9; i++)
-          SingleActivator(LogicalKeyboardKey(LogicalKeyboardKey.digit1.keyId + i)): () { if (i < _jumps.length && _scroll.isAttached) _jump(_jumps[i]); },
         const SingleActivator(LogicalKeyboardKey.pageDown): () => _pageOffset(1),
         const SingleActivator(LogicalKeyboardKey.pageUp): () => _pageOffset(-1),
         const SingleActivator(LogicalKeyboardKey.escape): () { if (focusMode.state) toggleFocusMode(); },
