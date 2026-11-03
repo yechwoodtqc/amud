@@ -12,6 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  cupertino_native_better:
+    path: packages/cupertino_native_better
   hebcal:
     path: packages/hebcal
   siddur_engine:
