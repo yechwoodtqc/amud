@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/core/dpad_navigation.dart';
+import 'package:amud/core/dpad_navigation.dart';
 
 void main() {
   testWidgets('directional keys move focus in reading order', (tester) async {
