@@ -255,11 +255,13 @@ class FontRepository extends Notifier<List<FontEntry>> {
   /// out. There any file can be picked, and [importBytes] checks it.
   Future<List<FontEntry>> pickAndImport() async {
     final mobile = !kIsWeb && (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
-    final files = mobile
-        ? await FilePicker.pickFiles(type: FileType.any)
-        : await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: importableFontExtensions);
+    final result = await FilePicker.platform.pickFiles(
+      type: mobile ? FileType.any : FileType.custom,
+      allowedExtensions: mobile ? null : importableFontExtensions,
+    );
+    if (result == null) return [];
     final added = <FontEntry>[];
-    for (final f in files) {
+    for (final f in result.files) {
       final bytes = await f.xFile.readAsBytes();
       added.add(await importBytes(fontNameFromFile(f.name), bytes));
     }
