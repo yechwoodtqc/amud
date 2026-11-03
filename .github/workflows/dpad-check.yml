@@ -1,0 +1,30 @@
+name: D-pad compatibility checks
+
+on:
+  push:
+    branches:
+      - compat/android6-dpad
+  workflow_dispatch:
+
+jobs:
+  flutter-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.41.2
+          cache: true
+      - name: Resolve dependencies
+        run: |
+          flutter pub get
+          (cd packages/hebcal && dart pub get)
+          (cd packages/siddur_engine && dart pub get)
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: |
+          flutter test
+          (cd packages/siddur_engine && dart test)
+          (cd packages/hebcal && dart test)
