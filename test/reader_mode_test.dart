@@ -108,6 +108,23 @@ void main() {
     expect(log, ['exit']);
   });
 
+  testWidgets('reader mode Exit button does not advance the text', (tester) async {
+    final log = <String>[];
+    await tester.pumpWidget(MaterialApp(
+      home: ReaderModeLayer(
+        active: true,
+        onNext: () => log.add('next'),
+        onBackTwo: () => log.add('back2'),
+        onPrevious: () => log.add('previous'),
+        onExit: () => log.add('exit'),
+        child: const SizedBox.expand(),
+      ),
+    ));
+    await tester.tap(find.text('Exit'));
+    await tester.pump();
+    expect(log, ['exit']);
+  });
+
   testWidgets('off, taps reach the page', (tester) async {
     expect(await run(tester, () => tester.tapAt(const Offset(200, 300)), active: false), ['page']);
   });
