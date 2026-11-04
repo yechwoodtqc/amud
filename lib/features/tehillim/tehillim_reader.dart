@@ -252,7 +252,7 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
               if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
                 if (_dpadScroll.hasClients) {
                   final p = _dpadScroll.position;
-                  _dpadScroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                  _dpadScroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent).toDouble(),
                       duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
                 }
                 return KeyEventResult.handled;
@@ -260,7 +260,7 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
               if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.pageUp) {
                 if (_dpadScroll.hasClients) {
                   final p = _dpadScroll.position;
-                  _dpadScroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                  _dpadScroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent).toDouble(),
                       duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
                 }
                 return KeyEventResult.handled;
