@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hebcal/hebcal.dart' show gematriya;
 
 import '../../core/hebrew_text.dart';
+import '../../core/dpad_focus.dart';
 import '../../core/l10n.dart';
 import '../../core/portion_progress.dart';
 import 'daf_page.dart';
@@ -248,7 +249,10 @@ class SegmentView extends ConsumerWidget {
     // boxes, the passage number in the flow, the marks at its end.
     if (ws != null && (view == GemaraView.phrase || view == GemaraView.interlinear)) {
       final gap = view == GemaraView.interlinear ? 14.0 : 8.0;
-      return marked(InkWell(
+      return marked(DpadFocusable(
+        onActivate: onSelect,
+        child: InkWell(
+        canRequestFocus: false,
         onTap: onSelect,
         onLongPress: onHold,
         borderRadius: BorderRadius.circular(6),
@@ -266,7 +270,7 @@ class SegmentView extends ConsumerWidget {
             details,
           ]),
         ),
-      ), gap);
+      )), gap);
     }
 
     final body = switch (view) {
@@ -283,7 +287,10 @@ class SegmentView extends ConsumerWidget {
     };
     final needsWords = (view == GemaraView.phrase || view == GemaraView.interlinear) && tokens.isNotEmpty;
 
-    return marked(InkWell(
+    return marked(DpadFocusable(
+      onActivate: onSelect,
+      child: InkWell(
+      canRequestFocus: false,
       onTap: onSelect,
       onLongPress: onHold,
       borderRadius: BorderRadius.circular(10),
@@ -313,7 +320,7 @@ class SegmentView extends ConsumerWidget {
           details,
         ]),
       ),
-    ), 10);
+    )), 10);
   }
 }
 
