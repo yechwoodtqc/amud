@@ -28,6 +28,31 @@ void main() {
     expect(Focus.of(tester.element(find.text('Second'))).hasFocus, isTrue);
   });
 
+  testWidgets('custom reader rows show an outline and activate with SELECT', (tester) async {
+    var activated = false;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: DpadNavigation(
+          child: DpadFocusable(
+            autofocus: true,
+            onActivate: () => activated = true,
+            child: const SizedBox(width: 140, height: 48, child: Text('Reader row')),
+          ),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    final outline = tester.widget<AnimatedContainer>(find.byType(AnimatedContainer).last);
+    final decoration = outline.decoration as BoxDecoration;
+    expect(decoration.border, isA<Border>());
+    expect((decoration.border as Border).top.width, 2.5);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pump();
+    expect(activated, isTrue);
+  });
+
   testWidgets('D-pad SELECT and Enter activate the focused control', (tester) async {
     var activated = false;
     await tester.pumpWidget(MaterialApp(
