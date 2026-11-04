@@ -11,6 +11,7 @@ import '../../core/adaptive.dart';
 import '../../core/analytics.dart';
 import '../../core/fireworks.dart';
 import '../../core/focus_mode.dart';
+import '../../core/dpad_focus.dart';
 import '../../core/fonts.dart';
 import '../../core/format.dart';
 import '../../core/hebrew_text.dart';
@@ -676,9 +677,11 @@ class _AliyahState extends ConsumerState<_Aliyah> {
                     // A verse at a time is marked whole; running text
                     // marks the tapped verse within it.
                     if (single)
-                      InkWell(
+                      DpadFocusable(
+                        onActivate: () => _toggle(units[i].first.at),
+                        child: InkWell(
+                        canRequestFocus: false,
                         borderRadius: BorderRadius.circular(10),
-                        // Keep the verse action available to hardware focus as well as touch.
                         onTap: () => _toggle(units[i].first.at),
                         // Holding a verse starts reader mode from it.
                         onLongPress: () {
@@ -690,6 +693,7 @@ class _AliyahState extends ConsumerState<_Aliyah> {
                               color: _marked == units[i].first.at ? fill : null, borderRadius: BorderRadius.circular(10)),
                           child: unitView(units[i]),
                         ),
+                      ),
                       )
                     else
                       unitView(units[i]),
