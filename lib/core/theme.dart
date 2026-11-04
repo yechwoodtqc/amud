@@ -114,24 +114,24 @@ ThemeData buildTheme(AppSettings s, Brightness brightness) {
     // subtle color wash. This is important on D-pad devices with no pointer.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
-          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide.none)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
-          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide.none)),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
-          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide(color: scheme.outline, width: 1))),
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
-          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide.none)),
     ),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
         side: WidgetStateBorderSide.resolveWith((states) =>
-            states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null),
+            states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide.none),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     ),
