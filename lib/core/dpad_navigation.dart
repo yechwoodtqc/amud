@@ -17,6 +17,13 @@ class DpadNavigation extends StatelessWidget {
         policy: ReadingOrderTraversalPolicy(),
         child: Shortcuts(
           shortcuts: const {
+            // Make directional navigation explicit. On small Android devices
+            // the platform key map can send arrows to a scrollable before
+            // focus traversal gets a chance to move focus.
+            SingleActivator(LogicalKeyboardKey.arrowUp): DirectionalFocusIntent(TraversalDirection.up),
+            SingleActivator(LogicalKeyboardKey.arrowDown): DirectionalFocusIntent(TraversalDirection.down),
+            SingleActivator(LogicalKeyboardKey.arrowLeft): DirectionalFocusIntent(TraversalDirection.left),
+            SingleActivator(LogicalKeyboardKey.arrowRight): DirectionalFocusIntent(TraversalDirection.right),
             SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
             SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
             SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
