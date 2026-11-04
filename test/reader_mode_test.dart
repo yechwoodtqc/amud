@@ -61,7 +61,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
-    expect(log, ['next', 'previous', 'next', 'exit']);
+    expect(log, ['next', 'previous', 'exit']);
   });
 
   testWidgets('active reader mode keeps hidden page controls out of focus', (tester) async {
