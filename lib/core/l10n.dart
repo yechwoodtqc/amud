@@ -243,6 +243,8 @@ final Map<String, String> _english = {
 /// English → (Hebrew, Yiddish). Missing entries fall back to English.
 const Map<String, (String, String)> _strings = {
   'Words in this line': ('מילים בשורה זו', 'ווערטער אין דער שורה'),
+  'Reader mode: arrows or OK to step; Back to stop': ('מצב קריאה: חצים או אישור למעבר; חזרה ליציאה', 'לייענ־מאָדוס: פֿײַלן אָדער OK צו גיין ווײַטער; צוריק צו ענדיקן'),
+  'Printed page. Use Up and Down to move between passages, and OK to enter reader mode.': ('עמוד מודפס. השתמשו בחצים למעלה ולמטה כדי לעבור בין קטעים, ובאישור כדי להיכנס למצב קריאה.', 'געדרוקטע זײַט. ניצט אַרויף און אַראָפּ צו גיין צווישן שטיקלעך, און OK אַרײַנצוגיין אין לייענ־מאָדוס.'),
   'This section has no date condition. Individual lines may have their own instructions.': ('לקטע זה אין תנאי תאריך. לשורות בודדות עשויות להיות הוראות משלהן.', 'דער שטיקל האָט נישט קיין דאַטע־תּנאי. באַזונדערע שורות קענען האָבן אייגענע הוראות.'),
   'Uses the rules for this siddur, including your custom rules.': ('לפי כללי סידור זה, כולל הכללים האישיים שלכם.', 'לויט די כּללים פֿונעם סידור, אַרײַנגערעכנט אײַערע אייגענע כּללים.'),
   'Choose the passage': ('בחירת הקטע', 'אויסקלײַבן דעם שטיקל'),

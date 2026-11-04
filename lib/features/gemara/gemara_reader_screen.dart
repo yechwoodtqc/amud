@@ -584,6 +584,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                     ),
                   ),
                 ),
+                ),
                 const SizedBox(height: 16),
                 _endOfAmud(),
                 _credits(d, words),
