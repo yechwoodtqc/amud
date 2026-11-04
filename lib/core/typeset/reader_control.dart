@@ -1,32 +1,18 @@
 import 'package:flutter/material.dart';
 
 /// A tappable row inside the reader's text: a folded section, a collapsed
-/// note, the chazzan's repetition.
-///
-/// Controls share one look that the text never takes: interface type
-/// rather than the prayer font, an icon in a tinted disc, a fill and a
-/// border, an affordance at the end. Folded content (something hidden
-/// that could be shown) gets a dashed border, like a page edge torn off;
-/// a control that opens in place gets a solid one. So at a glance the
-/// page separates what is said from what can be tapped.
-class ReaderControl extends StatelessWidget {
+/// note, the chazzan's repetition. It is a real focusable control so a
+/// hardware D-pad can reach and activate it.
+class ReaderControl extends StatefulWidget {
   final IconData icon;
   final Widget title;
   final Widget? subtitle;
-
-  /// Shown at the end before the chevron (e.g. "Show"), or in its place.
   final Widget? trailing;
-
-  /// Accent for the icon, border and text.
   final Color tone;
   final bool dashed;
   final bool open;
   final VoidCallback? onTap;
-
-  /// Squares off the bottom corners when content hangs beneath it.
   final bool attachedBelow;
-
-  /// Space kept clear of the text above and below.
   final double gap;
 
   const ReaderControl({
@@ -44,46 +30,79 @@ class ReaderControl extends StatelessWidget {
   });
 
   @override
+  State<ReaderControl> createState() => _ReaderControlState();
+}
+
+class _ReaderControlState extends State<ReaderControl> {
+  bool _focused = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final radius = attachedBelow ? const BorderRadius.vertical(top: Radius.circular(14)) : BorderRadius.circular(14);
+    final radius = widget.attachedBelow
+        ? const BorderRadius.vertical(top: Radius.circular(14))
+        : BorderRadius.circular(14);
     final content = Padding(
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
       child: Row(children: [
         Container(
           width: 30,
           height: 30,
-          decoration: BoxDecoration(color: tone.withValues(alpha: 0.14), shape: BoxShape.circle),
-          child: Icon(icon, size: 17, color: tone),
+          decoration: BoxDecoration(color: widget.tone.withValues(alpha: 0.14), shape: BoxShape.circle),
+          child: Icon(widget.icon, size: 17, color: widget.tone),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: DefaultTextStyle.merge(
-            style: theme.textTheme.bodyMedium?.copyWith(color: tone, fontFamily: theme.textTheme.bodyMedium?.fontFamily),
+            style: theme.textTheme.bodyMedium?.copyWith(color: widget.tone, fontFamily: theme.textTheme.bodyMedium?.fontFamily),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              title,
-              if (subtitle != null)
-                DefaultTextStyle.merge(style: theme.textTheme.bodySmall?.copyWith(color: tone.withValues(alpha: 0.8)), child: subtitle!),
+              widget.title,
+              if (widget.subtitle != null)
+                DefaultTextStyle.merge(
+                  style: theme.textTheme.bodySmall?.copyWith(color: widget.tone.withValues(alpha: 0.8)),
+                  child: widget.subtitle!,
+                ),
             ]),
           ),
         ),
-        if (trailing != null) ...[const SizedBox(width: 8), DefaultTextStyle.merge(style: theme.textTheme.labelMedium?.copyWith(color: tone), child: trailing!)],
+        if (widget.trailing != null) ...[
+          const SizedBox(width: 8),
+          DefaultTextStyle.merge(style: theme.textTheme.labelMedium?.copyWith(color: widget.tone), child: widget.trailing!),
+        ],
         const SizedBox(width: 2),
-        Icon(open ? Icons.expand_less : Icons.expand_more, size: 20, color: tone),
+        Icon(widget.open ? Icons.expand_less : Icons.expand_more, size: 20, color: widget.tone),
       ]),
     );
     return Padding(
-      padding: EdgeInsets.only(top: gap, bottom: attachedBelow ? 0 : gap),
+      padding: EdgeInsets.only(top: widget.gap, bottom: widget.attachedBelow ? 0 : widget.gap),
       child: Semantics(
         button: true,
-        expanded: open,
+        expanded: widget.open,
         child: CustomPaint(
-          foregroundPainter: dashed ? _DashedBorder(tone.withValues(alpha: 0.55), radius) : null,
+          foregroundPainter: widget.dashed && !_focused ? _DashedBorder(widget.tone.withValues(alpha: 0.55), radius) : null,
           child: Material(
-            color: tone.withValues(alpha: dashed ? 0.04 : 0.08),
-            shape: dashed ? RoundedRectangleBorder(borderRadius: radius) : RoundedRectangleBorder(borderRadius: radius, side: BorderSide(color: tone.withValues(alpha: 0.35))),
+            color: widget.tone.withValues(alpha: widget.dashed ? 0.04 : 0.08),
+            shape: RoundedRectangleBorder(
+              borderRadius: radius,
+              side: BorderSide(
+                color: _focused
+                    ? theme.colorScheme.primary
+                    : widget.dashed
+                        ? Colors.transparent
+                        : widget.tone.withValues(alpha: 0.35),
+                width: _focused ? 2 : 1,
+              ),
+            ),
             clipBehavior: Clip.antiAlias,
-            child: InkWell(onTap: onTap, child: content),
+            child: InkWell(
+              canRequestFocus: widget.onTap != null,
+              onFocusChange: (focused) {
+                if (_focused != focused && mounted) setState(() => _focused = focused);
+              },
+              onTap: widget.onTap,
+              focusColor: theme.colorScheme.primary.withValues(alpha: 0.10),
+              child: content,
+            ),
           ),
         ),
       ),
