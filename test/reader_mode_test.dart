@@ -1,6 +1,7 @@
 import 'package:amud/core/reader_mode.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,6 +12,7 @@ void main() {
         active: active,
         onNext: () => log.add('next'),
         onBackTwo: () => log.add('back2'),
+        onPrevious: () => log.add('previous'),
         onExit: () => log.add('exit'),
         child: GestureDetector(onTap: () => log.add('page'), child: const ColoredBox(color: Colors.white, child: SizedBox.expand())),
       ),
@@ -40,6 +42,26 @@ void main() {
       await g.up();
     });
     expect(log, ['exit']);
+  });
+
+  testWidgets('D-pad steps and exits reader mode', (tester) async {
+    final log = <String>[];
+    await tester.pumpWidget(MaterialApp(
+      home: ReaderModeLayer(
+        active: true,
+        onNext: () => log.add('next'),
+        onBackTwo: () => log.add('back2'),
+        onPrevious: () => log.add('previous'),
+        onExit: () => log.add('exit'),
+        child: const SizedBox.expand(),
+      ),
+    ));
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    expect(log, ['next', 'previous', 'next', 'exit']);
   });
 
   testWidgets('off, taps reach the page', (tester) async {

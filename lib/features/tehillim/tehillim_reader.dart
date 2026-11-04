@@ -228,6 +228,7 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
       active: _readerMode,
       onNext: () => _move(1, count),
       onBackTwo: () => _move(-2, count),
+      onPrevious: () => _move(-1, count),
       onExit: () => setState(() => _readerMode = false),
       child: SelectionArea(
       onSelectionChanged: _selectionChanged,

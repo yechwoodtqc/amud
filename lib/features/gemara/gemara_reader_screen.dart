@@ -452,6 +452,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
               active: _readerMode,
               onNext: () => _step(1),
               onBackTwo: () => _step(-2),
+               onPrevious: () => _step(-1),
               onExit: () => setState(() => _readerMode = false),
               child: _page(d, words, st),
             )
@@ -459,6 +460,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
               active: _readerMode,
               onNext: () => _step(1),
               onBackTwo: () => _step(-2),
+               onPrevious: () => _step(-1),
               onExit: () => setState(() => _readerMode = false),
               child: _reading(d, words, view, st),
             ),
@@ -543,7 +545,18 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                 Text(_book.unitTitle(context, d.amud),
                     textAlign: TextAlign.center, style: theme.textTheme.titleSmall?.copyWith(fontFamily: 'FrankRuehlCLM')),
                 const SizedBox(height: 6),
-                DafPage(
+                Focus(
+                  autofocus: true,
+                  child: CallbackShortcuts(
+                    bindings: {
+                      SingleActivator(LogicalKeyboardKey.arrowDown): () => _step(1),
+                      SingleActivator(LogicalKeyboardKey.arrowUp): () => _step(-1),
+                      SingleActivator(LogicalKeyboardKey.select): () => _startReader(_selected ?? _visible),
+                      SingleActivator(LogicalKeyboardKey.enter): () => _startReader(_selected ?? _visible),
+                    },
+                    child: Semantics(
+                      label: context.tr('Printed page. Use Up and Down to move between passages, and OK to enter reader mode.'),
+                      child: DafPage(
                   key: _dafKey,
                   text: d,
                   printed: ref.watch(dafLineMapProvider((tractate: d.tractate, amud: d.amud))).valueOrNull,
@@ -568,6 +581,8 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                     });
                     if (w != null) _remember();
                   },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _endOfAmud(),

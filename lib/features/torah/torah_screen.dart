@@ -672,6 +672,7 @@ class _TorahReaderScreenState extends ConsumerState<TorahReaderScreen> with Focu
               active: _readerMode,
               onNext: () => _step(1),
               onBackTwo: () => _step(-2),
+               onPrevious: () => _step(-1),
               onExit: () => setState(() => _readerMode = false),
               child: SingleChildScrollView(
         controller: _scroll,

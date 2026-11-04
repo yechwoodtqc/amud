@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 
 import 'l10n.dart';
 
@@ -23,6 +24,7 @@ class ReaderModeLayer extends StatefulWidget {
   /// Called on the second of two quick taps: go back two from where the
   /// first tap moved to.
   final VoidCallback onBackTwo;
+  final VoidCallback? onPrevious;
   final VoidCallback onExit;
   final Widget child;
   const ReaderModeLayer({
@@ -30,6 +32,7 @@ class ReaderModeLayer extends StatefulWidget {
     required this.active,
     required this.onNext,
     required this.onBackTwo,
+    this.onPrevious,
     required this.onExit,
     required this.child,
   });
@@ -39,6 +42,27 @@ class ReaderModeLayer extends StatefulWidget {
 }
 
 class _ReaderModeLayerState extends State<ReaderModeLayer> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(debugLabel: 'Reader mode D-pad');
+    if (widget.active) _requestFocus();
+  }
+
+  @override
+  void didUpdateWidget(covariant ReaderModeLayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.active && !oldWidget.active) _requestFocus();
+    if (!widget.active && oldWidget.active) _focusNode.unfocus();
+  }
+
+  void _requestFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.active) _focusNode.requestFocus();
+    });
+  }
   Offset? _down;
   Duration? _downTime;
   Duration? _lastTap;
@@ -48,6 +72,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
   @override
   void dispose() {
     _hold?.cancel();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -87,18 +112,32 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Listener(
-      // Opaque: while active the page underneath ignores pointers, and a
-      // deferring listener would then never be hit itself.
-      behavior: HitTestBehavior.opaque,
-      onPointerDown: _pointerDown,
-      onPointerMove: _pointerMove,
-      onPointerUp: _pointerUp,
-      onPointerCancel: (_) {
-        _hold?.cancel();
-        _down = null;
-      },
-      child: Stack(children: [
+    return Focus(
+      focusNode: _focusNode,
+      canRequestFocus: widget.active,
+      skipTraversal: !widget.active,
+      child: CallbackShortcuts(
+        bindings: {
+          SingleActivator(LogicalKeyboardKey.arrowDown): widget.onNext,
+          SingleActivator(LogicalKeyboardKey.arrowRight): widget.onNext,
+          SingleActivator(LogicalKeyboardKey.arrowUp): widget.onPrevious ?? widget.onBackTwo,
+          SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious ?? widget.onBackTwo,
+          SingleActivator(LogicalKeyboardKey.select): widget.onNext,
+          SingleActivator(LogicalKeyboardKey.enter): widget.onNext,
+          SingleActivator(LogicalKeyboardKey.escape): widget.onExit,
+        },
+        child: Listener(
+          // Opaque: while active the page underneath ignores pointers, and a
+          // deferring listener would then never be hit itself.
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: _pointerDown,
+          onPointerMove: _pointerMove,
+          onPointerUp: _pointerUp,
+          onPointerCancel: (_) {
+            _hold?.cancel();
+            _down = null;
+          },
+          child: Stack(children: [
         Positioned.fill(child: IgnorePointer(ignoring: widget.active, child: widget.child)),
         if (widget.active)
           Positioned(
@@ -112,14 +151,16 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   child: Text(
-                    context.tr('Reader mode: tap for next, double-tap for back, hold to stop'),
+                    context.tr('Reader mode: arrows or OK to step; Back to stop'),
                     style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onInverseSurface),
                   ),
                 ),
               ),
             ),
           ),
-      ]),
+          ]),
+        ),
+      ),
     );
   }
 }

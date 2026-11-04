@@ -628,6 +628,7 @@ class _AliyahState extends ConsumerState<_Aliyah> {
           active: widget.readerMode,
           onNext: () => _step(1),
           onBackTwo: () => _step(-2),
+               onPrevious: () => _step(-1),
           onExit: () => widget.onReader(false),
           child: ListView.builder(
           controller: _scroll,
