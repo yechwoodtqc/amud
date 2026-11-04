@@ -132,7 +132,7 @@ ThemeData buildTheme(AppSettings s, Brightness brightness) {
       style: ButtonStyle(
         side: WidgetStateBorderSide.resolveWith((states) =>
             states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : BorderSide.none),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       ),
     ),
     // The interface is set in San Francisco on Apple platforms, as native
