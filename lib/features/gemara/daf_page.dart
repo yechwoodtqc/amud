@@ -26,6 +26,9 @@ class DafPage extends StatefulWidget {
 
   /// Segment → highlight color, from the reader's own marks.
   final Map<int, Color> highlights;
+  /// Draw a high-contrast outline around the selected passage while this page
+  /// owns D-pad focus (the printed page itself is custom-painted).
+  final bool focused;
   /// A tap on the page: the word under it (null on empty space) and where,
   /// in global coordinates, so a tooltip can be placed over it.
   final void Function(PlacedWord? word, Offset global)? onTapWord;
@@ -52,6 +55,7 @@ class DafPage extends StatefulWidget {
     this.markedComments = const {},
     this.wordMarks,
     this.highlights = const {},
+    this.focused = false,
     this.onTapWord,
     this.onHoldWord,
     this.onLayout,
@@ -179,6 +183,7 @@ class _DafPageState extends State<DafPage> {
             markedComments: widget.markedComments,
             wordMarks: widget.wordMarks,
             highlights: widget.highlights,
+            focused: widget.focused,
             colors: dafMarkColors(theme),
           ),
         ),
@@ -205,6 +210,7 @@ class _DafPainter extends CustomPainter {
   final Set<(DafColumn, int)> markedComments;
   final ({Set<int> strong, Set<int> light})? wordMarks;
   final Map<int, Color> highlights;
+  final bool focused;
   final ({Color main, Color inner, Color outer}) colors;
   _DafPainter({
     required this.layout,
@@ -213,6 +219,7 @@ class _DafPainter extends CustomPainter {
     required this.markedComments,
     required this.wordMarks,
     required this.highlights,
+    required this.focused,
     required this.colors,
   });
 
@@ -272,6 +279,25 @@ class _DafPainter extends CustomPainter {
       prev = w;
     }
     flush();
+    // This printed daf is a CustomPaint, not a Material control, so Flutter's
+    // normal focus highlight is invisible. Outline each line of the selected
+    // Gemara passage explicitly while the page has D-pad focus.
+    if (focused && selected != null) {
+      final lines = <double, Rect>{};
+      for (final w in layout.words) {
+        if (w.column != DafColumn.main || w.word.segment != selected) continue;
+        final rect = Rect.fromLTWH(w.x, w.y, w.width, w.height);
+        final key = w.y;
+        lines[key] = lines[key] == null ? rect : lines[key]!.expandToInclude(rect);
+      }
+      final outline = Paint()
+        ..color = colors.main.withValues(alpha: 1)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.4;
+      for (final rect in lines.values) {
+        canvas.drawRRect(RRect.fromRectAndRadius(rect.inflate(3), const Radius.circular(4)), outline);
+      }
+    }
     canvas.drawPicture(picture);
   }
 
@@ -282,5 +308,6 @@ class _DafPainter extends CustomPainter {
       old.markedComments != markedComments ||
       old.wordMarks != wordMarks ||
       old.highlights != highlights ||
+      old.focused != focused ||
       old.colors != colors;
 }
