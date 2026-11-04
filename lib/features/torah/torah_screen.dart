@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hebcal/hebcal.dart';
@@ -674,7 +675,34 @@ class _TorahReaderScreenState extends ConsumerState<TorahReaderScreen> with Focu
               onBackTwo: () => _step(-2),
                onPrevious: () => _step(-1),
               onExit: () => setState(() => _readerMode = false),
-              child: SingleChildScrollView(
+              child: Focus(
+                autofocus: true,
+                onKeyEvent: (node, event) {
+                  if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+                  final key = event.logicalKey;
+                  if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
+                    if (_scroll.hasClients) {
+                      final p = _scroll.position;
+                      _scroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                          duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                    }
+                    return KeyEventResult.handled;
+                  }
+                  if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.pageUp) {
+                    if (_scroll.hasClients) {
+                      final p = _scroll.position;
+                      _scroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                          duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                    }
+                    return KeyEventResult.handled;
+                  }
+                  if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
+                    node.nextFocus();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: SingleChildScrollView(
         controller: _scroll,
         padding: pagePadding(context, EdgeInsets.symmetric(horizontal: ts.gutter(MediaQuery.sizeOf(context).width, min: 16)).copyWith(top: 8, bottom: 24)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -754,6 +782,7 @@ class _TorahReaderScreenState extends ConsumerState<TorahReaderScreen> with Focu
                 style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
           ],
         ]),
+                ),
               ),
               ),
               ),
