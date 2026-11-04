@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart' show SelectedContent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,6 +46,7 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
   bool _readerMode = false;
   int _step = 0;
   final _stepKeys = <GlobalKey>[];
+  final _dpadScroll = ScrollController();
 
   void _showStep(int i, {required bool animate}) {
     if (i < 0 || i >= _stepKeys.length) return;
@@ -106,6 +108,7 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
   void dispose() {
     analytics.event('text_read', {..._text, 'seconds': _opened.elapsed.inSeconds});
     _progress.dispose();
+    _dpadScroll.dispose();
     super.dispose();
   }
 
@@ -238,10 +241,39 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
         onNotification: (n) => _scrolled(n.asScrollUpdate()),
         child: NotificationListener<ScrollUpdateNotification>(
           onNotification: _scrolled,
-          child: ListView.builder(
-            padding: pagePadding(context, EdgeInsets.fromLTRB(side, 8, side, 96)),
-            itemCount: rows.length,
-            itemBuilder: (c, i) => rows[i](c),
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: (node, event) {
+              if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+              final key = event.logicalKey;
+              if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
+                if (_dpadScroll.hasClients) {
+                  final p = _dpadScroll.position;
+                  _dpadScroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                      duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                }
+                return KeyEventResult.handled;
+              }
+              if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.pageUp) {
+                if (_dpadScroll.hasClients) {
+                  final p = _dpadScroll.position;
+                  _dpadScroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                      duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                }
+                return KeyEventResult.handled;
+              }
+              if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
+                node.nextFocus();
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: ListView.builder(
+              controller: _dpadScroll,
+              padding: pagePadding(context, EdgeInsets.fromLTRB(side, 8, side, 96)),
+              itemCount: rows.length,
+              itemBuilder: (c, i) => rows[i](c),
+            ),
           ),
         ),
       ),
