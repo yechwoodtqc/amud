@@ -57,6 +57,7 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
+    expect(tester.binding.focusManager.primaryFocus?.debugLabel, 'Reader mode D-pad');
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.select);

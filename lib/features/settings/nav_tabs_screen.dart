@@ -70,7 +70,7 @@ int maxNavItems(BuildContext context, {required bool labels, required Iterable<S
         : ids.fold(0.0, (w, id) => math.max(w, textWidth(context, context.tr(NavItem.of(id)?.label ?? ''), style)));
     // Leave a small gutter on both sides; five 64dp items exactly fill 320dp
     // on paper but crowd the labels and focus indicators on a narrow screen.
-    fit = ((size.width - 16) / math.max(64, widest + 4)).floor();
+    fit = ((size.width - (labels ? 16 : 0)) / math.max(64, widest + 4)).floor();
   }
   return fit.clamp(2, navTabs.length + navShortcuts.length);
 }

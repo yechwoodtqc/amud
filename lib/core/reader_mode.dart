@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show LogicalKeyboardKey;
+import 'package:flutter/services.dart';
 
 import 'l10n.dart';
 
@@ -48,7 +48,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
   void initState() {
     super.initState();
     _focusNode = FocusNode(debugLabel: 'Reader mode D-pad');
-    if (widget.active) _requestFocus();
+    if (widget.active) _focusNode.requestFocus();
   }
 
   @override
