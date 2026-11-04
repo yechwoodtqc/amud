@@ -82,6 +82,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
   Timer? _saveTimer;
   int _visible = 0;
   bool _zoomed = false;
+  bool _pageHasFocus = false;
 
   /// Reader mode: taps step passage by passage (see [ReaderModeLayer]).
   bool _readerMode = false;
@@ -547,6 +548,9 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                 const SizedBox(height: 6),
                 Focus(
                   autofocus: true,
+                  onFocusChange: (focused) {
+                    if (mounted && _pageHasFocus != focused) setState(() => _pageHasFocus = focused);
+                  },
                   child: CallbackShortcuts(
                     bindings: {
                       SingleActivator(LogicalKeyboardKey.arrowDown): () => _step(1),
@@ -569,6 +573,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                         markedComments: tapMarks?.comments ?? const {},
                         wordMarks: tapMarks?.words,
                         highlights: highlights,
+                        focused: _pageHasFocus,
                         scale: g.dafScale,
                         onTapWord: (w, global) {
                           // Anchor the tooltip to the word's top edge, not the tap,
