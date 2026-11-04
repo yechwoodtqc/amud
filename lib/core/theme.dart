@@ -127,6 +127,31 @@ ThemeData buildTheme(AppSettings s, Brightness brightness) {
     // FocusHighlightStrategy is set to alwaysTraditional on Android so this
     // overlay is shown even without a mouse or touch interaction.
     focusColor: scheme.primary.withValues(alpha: 0.28),
+    // Every standard button gets a real outline when focused, not merely a
+    // subtle color wash. This is important on D-pad devices with no pointer.
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(side: WidgetStateBorderSide.resolveWith((states) =>
+          states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null)),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        side: WidgetStateBorderSide.resolveWith((states) =>
+            states.contains(WidgetState.focused) ? BorderSide(color: scheme.primary, width: 2.5) : null),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    ),
     // The interface is set in San Francisco on Apple platforms, as native
     // apps are; the Latin font the reader picked is for the texts.
     fontFamily: isCupertinoPlatform ? null : s.latinFont,
