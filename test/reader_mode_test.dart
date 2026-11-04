@@ -64,6 +64,23 @@ void main() {
     expect(log, ['next', 'previous', 'next', 'exit']);
   });
 
+  testWidgets('system Back exits reader mode instead of leaving the page', (tester) async {
+    final log = <String>[];
+    await tester.pumpWidget(MaterialApp(
+      home: ReaderModeLayer(
+        active: true,
+        onNext: () => log.add('next'),
+        onBackTwo: () => log.add('back2'),
+        onPrevious: () => log.add('previous'),
+        onExit: () => log.add('exit'),
+        child: const SizedBox.expand(),
+      ),
+    ));
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(log, ['exit']);
+  });
+
   testWidgets('off, taps reach the page', (tester) async {
     expect(await run(tester, () => tester.tapAt(const Offset(200, 300)), active: false), ['page']);
   });

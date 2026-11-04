@@ -112,7 +112,12 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Focus(
+    return PopScope<void>(
+      canPop: !widget.active,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && widget.active) widget.onExit();
+      },
+      child: Focus(
       focusNode: _focusNode,
       canRequestFocus: widget.active,
       skipTraversal: !widget.active,
@@ -160,6 +165,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
           ),
           ]),
         ),
+      ),
       ),
     );
   }
