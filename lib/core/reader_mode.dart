@@ -42,27 +42,16 @@ class ReaderModeLayer extends StatefulWidget {
 }
 
 class _ReaderModeLayerState extends State<ReaderModeLayer> {
-  late final FocusNode _focusNode;
-
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'Reader mode D-pad');
-    if (widget.active) _focusNode.requestFocus();
   }
 
   @override
   void didUpdateWidget(covariant ReaderModeLayer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.active && !oldWidget.active) _requestFocus();
-    if (!widget.active && oldWidget.active) _focusNode.unfocus();
   }
 
-  void _requestFocus() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && widget.active) _focusNode.requestFocus();
-    });
-  }
   Offset? _down;
   Duration? _downTime;
   Duration? _lastTap;
@@ -72,7 +61,6 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
   @override
   void dispose() {
     _hold?.cancel();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -117,78 +105,64 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && widget.active) widget.onExit();
       },
-      child: Focus(
-        focusNode: _focusNode,
-        autofocus: widget.active,
-        canRequestFocus: widget.active,
-        skipTraversal: !widget.active,
-        onKeyEvent: (node, event) {
-          final key = event.logicalKey;
-          // The logical key remains in the pressed set for down/repeat events,
-          // and is removed before the matching key-up is delivered.
-          // Use the event type rather than the global pressed-key snapshot.
-          // Some Android 6 keyboard drivers clear that snapshot before Flutter
-          // dispatches the event, making every D-pad press look like key-up.
-          if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
-          if (key == LogicalKeyboardKey.arrowDown ||
-              key == LogicalKeyboardKey.arrowRight ||
-              key == LogicalKeyboardKey.select ||
-              key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.numpadEnter) {
-            widget.onNext();
-            return KeyEventResult.handled;
-          }
-          if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowLeft) {
-            (widget.onPrevious ?? widget.onBackTwo)();
-            return KeyEventResult.handled;
-          }
-          if (key == LogicalKeyboardKey.escape) {
-            widget.onExit();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Listener(
-          // Opaque: while active the page underneath ignores pointers, and a
-          // deferring listener would then never be hit itself.
-          behavior: HitTestBehavior.opaque,
-          onPointerDown: _pointerDown,
-          onPointerMove: _pointerMove,
-          onPointerUp: _pointerUp,
-          onPointerCancel: (_) {
-            _hold?.cancel();
-            _down = null;
+      child: CallbackShortcuts(
+        // Passage stepping remains available while the visible Exit control
+        // owns focus. The old parent Focus node swallowed SELECT before the
+        // banner button could receive it.
+        bindings: {
+          if (widget.active) ...{
+            const SingleActivator(LogicalKeyboardKey.arrowDown): widget.onNext,
+            const SingleActivator(LogicalKeyboardKey.arrowRight): widget.onNext,
+            const SingleActivator(LogicalKeyboardKey.arrowUp): widget.onPrevious ?? widget.onBackTwo,
+            const SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious ?? widget.onBackTwo,
+            const SingleActivator(LogicalKeyboardKey.escape): widget.onExit,
           },
-          child: Stack(children: [
-            Positioned.fill(
+        },
+        child: Stack(children: [
+          Positioned.fill(
+            child: Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: _pointerDown,
+              onPointerMove: _pointerMove,
+              onPointerUp: _pointerUp,
+              onPointerCancel: (_) {
+                _hold?.cancel();
+                _down = null;
+              },
               child: ExcludeFocus(
-                // Controls in the covered page must not steal the D-pad
-                // while this layer owns reader-mode navigation.
                 excluding: widget.active,
                 child: IgnorePointer(ignoring: widget.active, child: widget.child),
               ),
             ),
-            if (widget.active)
-              Positioned(
-                top: 8,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Material(
-                    color: theme.colorScheme.inverseSurface.withValues(alpha: 0.88),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          ),
+          if (widget.active)
+            Positioned(
+              top: 8,
+              left: 8,
+              right: 8,
+              child: Material(
+                color: theme.colorScheme.inverseSurface.withValues(alpha: 0.96),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(children: [
+                    Expanded(
                       child: Text(
-                        context.tr('Reader mode: arrows or OK to step; Back to stop'),
+                        context.tr('Reader mode: arrows step through passages'),
                         style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onInverseSurface),
                       ),
                     ),
-                  ),
+                    TextButton.icon(
+                      autofocus: true,
+                      onPressed: widget.onExit,
+                      icon: Icon(Icons.close, size: 18, color: theme.colorScheme.onInverseSurface),
+                      label: Text(context.tr('Exit'), style: TextStyle(color: theme.colorScheme.onInverseSurface)),
+                    ),
+                  ]),
                 ),
               ),
-          ]),
-        ),
+            ),
+        ]),
       ),
     );
   }
