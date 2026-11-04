@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -630,7 +631,34 @@ class _AliyahState extends ConsumerState<_Aliyah> {
           onBackTwo: () => _step(-2),
                onPrevious: () => _step(-1),
           onExit: () => widget.onReader(false),
-          child: ListView.builder(
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: (node, event) {
+              if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+              final key = event.logicalKey;
+              if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
+                if (_scroll.hasClients) {
+                  final p = _scroll.position;
+                  _scroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                      duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                }
+                return KeyEventResult.handled;
+              }
+              if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.pageUp) {
+                if (_scroll.hasClients) {
+                  final p = _scroll.position;
+                  _scroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                      duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+                }
+                return KeyEventResult.handled;
+              }
+              if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
+                node.nextFocus();
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: ListView.builder(
           controller: _scroll,
           padding: EdgeInsets.fromLTRB(gutter, 8, gutter, 32 + MediaQuery.paddingOf(context).bottom),
           itemCount: units.length + 1,
@@ -665,6 +693,7 @@ class _AliyahState extends ConsumerState<_Aliyah> {
                     if (!single) SizedBox(height: ts.line * 0.4),
                   ]),
                 ),
+            ),
           ),
         ),
       ),
