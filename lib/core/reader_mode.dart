@@ -126,7 +126,10 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
           final key = event.logicalKey;
           // The logical key remains in the pressed set for down/repeat events,
           // and is removed before the matching key-up is delivered.
-          if (!HardwareKeyboard.instance.logicalKeysPressed.contains(key)) return KeyEventResult.ignored;
+          // Use the event type rather than the global pressed-key snapshot.
+          // Some Android 6 keyboard drivers clear that snapshot before Flutter
+          // dispatches the event, making every D-pad press look like key-up.
+          if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
           if (key == LogicalKeyboardKey.arrowDown ||
               key == LogicalKeyboardKey.arrowRight ||
               key == LogicalKeyboardKey.select ||
