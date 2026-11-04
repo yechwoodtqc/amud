@@ -42,16 +42,6 @@ class ReaderModeLayer extends StatefulWidget {
 }
 
 class _ReaderModeLayerState extends State<ReaderModeLayer> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant ReaderModeLayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
   Offset? _down;
   Duration? _downTime;
   Duration? _lastTap;
@@ -115,6 +105,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
             const SingleActivator(LogicalKeyboardKey.arrowRight): widget.onNext,
             const SingleActivator(LogicalKeyboardKey.arrowUp): widget.onPrevious ?? widget.onBackTwo,
             const SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious ?? widget.onBackTwo,
+            const SingleActivator(LogicalKeyboardKey.select): widget.onExit,
             const SingleActivator(LogicalKeyboardKey.escape): widget.onExit,
           },
         },
