@@ -160,7 +160,14 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
             _down = null;
           },
           child: Stack(children: [
-            Positioned.fill(child: IgnorePointer(ignoring: widget.active, child: widget.child)),
+            Positioned.fill(
+              child: ExcludeFocus(
+                // Controls in the covered page must not steal the D-pad
+                // while this layer owns reader-mode navigation.
+                excluding: widget.active,
+                child: IgnorePointer(ignoring: widget.active, child: widget.child),
+              ),
+            ),
             if (widget.active)
               Positioned(
                 top: 8,
