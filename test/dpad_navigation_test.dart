@@ -99,34 +99,29 @@ void main() {
     expect(activated, isTrue);
   });
 
-  testWidgets('reader scroll focus does not swallow keys from focused buttons', (tester) async {
+  testWidgets('reader ancestor ignores keys when a descendant button is focused', (tester) async {
     var secondActivated = false;
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
         body: DpadNavigation(
           child: Focus(
-            autofocus: true,
             onKeyEvent: (node, event) {
+              // Mirrors the reader's scroll handler: it should act only while
+              // the reading surface itself, not one of its buttons, is focused.
               if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
-              if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.select) {
-                node.nextFocus();
-                return KeyEventResult.handled;
-              }
               if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 return KeyEventResult.handled;
               }
               return KeyEventResult.ignored;
             },
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TextButton(onPressed: _noop, child: const Text('Reader action one')),
+              TextButton(onPressed: _noop, autofocus: true, child: const Text('Reader action one')),
               TextButton(onPressed: () => secondActivated = true, child: const Text('Reader action two')),
             ]),
           ),
         ),
       ),
     ));
-    await tester.sendKeyEvent(LogicalKeyboardKey.select);
-    await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
