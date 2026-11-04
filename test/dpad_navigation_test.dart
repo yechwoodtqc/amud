@@ -74,6 +74,41 @@ void main() {
     expect(activated, isTrue);
   });
 
+  testWidgets('reader scroll focus does not swallow keys from focused buttons', (tester) async {
+    var secondActivated = false;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: DpadNavigation(
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: (node, event) {
+              if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
+              if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.select) {
+                node.nextFocus();
+                return KeyEventResult.handled;
+              }
+              if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextButton(onPressed: _noop, child: const Text('Reader action one')),
+              TextButton(onPressed: () => secondActivated = true, child: const Text('Reader action two')),
+            ]),
+          ),
+        ),
+      ),
+    ));
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pump();
+    expect(secondActivated, isTrue);
+  });
+
 }
 
 void _noop() {}
