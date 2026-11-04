@@ -557,33 +557,33 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                     child: Semantics(
                       label: context.tr('Printed page. Use Up and Down to move between passages, and OK to enter reader mode.'),
                       child: DafPage(
-                  key: _dafKey,
-                  text: d,
-                  printed: ref.watch(dafLineMapProvider((tractate: d.tractate, amud: d.amud))).valueOrNull,
-                  onLayout: (l) {
-                    _dafLayout = l;
-                    _queuePageProgress();
-                  },
-                  onHoldWord: (w) => _startReader(w.word.segment),
-                  selected: _selected,
-                  markedComments: tapMarks?.comments ?? const {},
-                  wordMarks: tapMarks?.words,
-                  highlights: highlights,
-                  scale: g.dafScale,
-                  onTapWord: (w, global) {
-                    // Anchor the tooltip to the word's top edge, not the tap,
-                    // so it sits above the text rather than on it.
-                    final daf = _dafKey.currentContext?.findRenderObject() as RenderBox?;
-                    final anchor = w == null || daf == null ? global : daf.localToGlobal(Offset(w.x + w.width / 2, w.y));
-                    setState(() {
-                      _tip = w == null ? null : (word: w, global: anchor);
-                      if (w != null) _selected = w.word.segment;
-                    });
-                    if (w != null) _remember();
-                  },
+                        key: _dafKey,
+                        text: d,
+                        printed: ref.watch(dafLineMapProvider((tractate: d.tractate, amud: d.amud))).valueOrNull,
+                        onLayout: (l) {
+                          _dafLayout = l;
+                          _queuePageProgress();
+                        },
+                        onHoldWord: (w) => _startReader(w.word.segment),
+                        selected: _selected,
+                        markedComments: tapMarks?.comments ?? const {},
+                        wordMarks: tapMarks?.words,
+                        highlights: highlights,
+                        scale: g.dafScale,
+                        onTapWord: (w, global) {
+                          // Anchor the tooltip to the word's top edge, not the tap,
+                          // so it sits above the text rather than on it.
+                          final daf = _dafKey.currentContext?.findRenderObject() as RenderBox?;
+                          final anchor = w == null || daf == null ? global : daf.localToGlobal(Offset(w.x + w.width / 2, w.y));
+                          setState(() {
+                            _tip = w == null ? null : (word: w, global: anchor);
+                            if (w != null) _selected = w.word.segment;
+                          });
+                          if (w != null) _remember();
+                        },
+                      ),
                     ),
                   ),
-                ),
                 ),
                 const SizedBox(height: 16),
                 _endOfAmud(),

@@ -118,6 +118,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
         if (!didPop && widget.active) widget.onExit();
       },
       child: Focus(
+      autofocus: widget.active,
       focusNode: _focusNode,
       canRequestFocus: widget.active,
       skipTraversal: !widget.active,
