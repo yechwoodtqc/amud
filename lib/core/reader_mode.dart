@@ -123,8 +123,10 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
         canRequestFocus: widget.active,
         skipTraversal: !widget.active,
         onKeyEvent: (node, event) {
-          if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
           final key = event.logicalKey;
+          // The logical key remains in the pressed set for down/repeat events,
+          // and is removed before the matching key-up is delivered.
+          if (!HardwareKeyboard.instance.logicalKeysPressed.contains(key)) return KeyEventResult.ignored;
           if (key == LogicalKeyboardKey.arrowDown ||
               key == LogicalKeyboardKey.arrowRight ||
               key == LogicalKeyboardKey.select ||
