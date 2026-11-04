@@ -41,6 +41,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // This branch targets the LG Exalt LTE only. Flutter's target-platform
+        // flag alone does not filter native libraries bundled by plugins.
+        ndk {
+            abiFilters += setOf("armeabi-v7a")
+        }
     }
 
     // Where the app is distributed. "github": the APK on GitHub Releases,
