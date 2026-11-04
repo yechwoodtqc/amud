@@ -327,7 +327,30 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
       // The reader's widgets read this book's settings (its font).
       child: ProviderScope(
       overrides: [readerBookProvider.overrideWithValue(widget.book)],
-      child: Focus(autofocus: true, child: Scaffold(
+      child: Focus(
+        autofocus: true,
+        onKeyEvent: (node, event) {
+          if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+          final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowDown) {
+            _pageOffset(1);
+            return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.arrowUp) {
+            _pageOffset(-1);
+            return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.select ||
+              key == LogicalKeyboardKey.enter ||
+              key == LogicalKeyboardKey.numpadEnter) {
+            // The text surface is the initial focus target. OK enters the
+            // normal focus order so toolbar and in-text controls can be used.
+            node.nextFocus();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Scaffold(
       body: Column(children: [
         // Focus mode: the bars slide up out of view; the text keeps clear
         // of the status bar.
