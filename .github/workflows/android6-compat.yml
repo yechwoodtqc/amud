@@ -26,6 +26,8 @@ jobs:
           cache: true
       - name: Resolve dependencies
         run: flutter pub get
+      - name: Run Flutter widget and regression tests
+        run: flutter test
       - name: Build API 23 APK for LG Exalt (32-bit ARM)
         run: flutter build apk --release --flavor github --target-platform android-arm
       - name: Upload APK
