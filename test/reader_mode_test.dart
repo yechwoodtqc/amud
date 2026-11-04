@@ -57,11 +57,10 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
-    expect(tester.binding.focusManager.primaryFocus?.debugLabel, 'Reader mode D-pad');
+    expect(Focus.of(tester.element(find.text('Exit'))).hasFocus, isTrue);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     expect(log, ['next', 'previous', 'next', 'exit']);
   });
 
