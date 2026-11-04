@@ -784,7 +784,27 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
     final width = MediaQuery.sizeOf(context).width;
     final gutter = width > 900 ? (width - 860) / 2 : 12.0;
     _count = d.length;
-    return ScrollablePositionedList.builder(
+    return Focus(
+      autofocus: true,
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          _step(1);
+          return KeyEventResult.handled;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _step(-1);
+          return KeyEventResult.handled;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.select ||
+            event.logicalKey == LogicalKeyboardKey.enter ||
+            event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+          _startReader(_selected ?? _visible);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: ScrollablePositionedList.builder(
       itemScrollController: _items,
       itemPositionsListener: _positions,
       initialScrollIndex: (_jump ?? widget.segment ?? widget.from ?? -1) + 1,
@@ -830,6 +850,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
           },
         );
       },
+      ),
     );
   }
 
