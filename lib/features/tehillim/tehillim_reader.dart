@@ -244,6 +244,9 @@ class _TehillimReaderScreenState extends ConsumerState<TehillimReaderScreen> {
           child: Focus(
             autofocus: true,
             onKeyEvent: (node, event) {
+              // Only the reading surface handles scrolling. Descendant
+              // buttons must receive D-pad navigation and SELECT activation.
+              if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
               if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
               final key = event.logicalKey;
               if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
