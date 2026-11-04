@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:amud/core/dpad_navigation.dart';
+import 'package:amud/core/dpad_focus.dart';
 
 void main() {
   testWidgets('directional keys move focus in reading order', (tester) async {
@@ -50,6 +51,29 @@ void main() {
     await tester.pump();
     expect(activated, isTrue);
   });
+  testWidgets('custom reader surfaces have an outline and activate with SELECT', (tester) async {
+    var activated = false;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: DpadNavigation(
+          child: DpadFocusable(
+            autofocus: true,
+            onActivate: () => activated = true,
+            child: const Padding(padding: EdgeInsets.all(12), child: Text('Passage')),
+          ),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    final focus = Focus.of(tester.element(find.text('Passage')));
+    expect(focus.hasFocus, isTrue);
+    final container = tester.widget<AnimatedContainer>(find.byType(AnimatedContainer).last);
+    final decoration = container.decoration as BoxDecoration;
+    expect(decoration.border!.top.color, isNot(Colors.transparent));
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    expect(activated, isTrue);
+  });
+
 }
 
 void _noop() {}
