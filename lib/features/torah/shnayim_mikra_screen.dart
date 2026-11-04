@@ -635,7 +635,6 @@ class _AliyahState extends ConsumerState<_Aliyah> {
           child: Focus(
             autofocus: true,
             onKeyEvent: (node, event) {
-          if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
               // Only the reading surface handles scrolling. Descendant
               // buttons must receive D-pad navigation and SELECT activation.
               if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
