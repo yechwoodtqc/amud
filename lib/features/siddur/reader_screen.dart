@@ -330,6 +330,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
       child: Focus(
         autofocus: true,
         onKeyEvent: (node, event) {
+          if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
           // This handler belongs to the reading surface. Once SELECT moves
           // focus into a button, let that button and the app-wide D-pad
           // traversal shortcuts receive keys; otherwise this ancestor eats
