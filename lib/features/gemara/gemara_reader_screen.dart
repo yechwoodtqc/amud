@@ -787,6 +787,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
     return Focus(
       autofocus: true,
       onKeyEvent: (node, event) {
+          if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           _step(1);
