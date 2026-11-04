@@ -679,6 +679,7 @@ class _TorahReaderScreenState extends ConsumerState<TorahReaderScreen> with Focu
               child: Focus(
                 autofocus: true,
                 onKeyEvent: (node, event) {
+          if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
                   // Only the reading surface handles scrolling. Once focus
                   // enters a control, let it receive D-pad and SELECT keys.
                   if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
