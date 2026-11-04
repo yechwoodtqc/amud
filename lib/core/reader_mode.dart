@@ -118,19 +118,30 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
         if (!didPop && widget.active) widget.onExit();
       },
       child: Focus(
-      autofocus: widget.active,
-      focusNode: _focusNode,
-      canRequestFocus: widget.active,
-      skipTraversal: !widget.active,
-      child: CallbackShortcuts(
-        bindings: {
-          SingleActivator(LogicalKeyboardKey.arrowDown): widget.onNext,
-          SingleActivator(LogicalKeyboardKey.arrowRight): widget.onNext,
-          SingleActivator(LogicalKeyboardKey.arrowUp): widget.onPrevious ?? widget.onBackTwo,
-          SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious ?? widget.onBackTwo,
-          SingleActivator(LogicalKeyboardKey.select): widget.onNext,
-          SingleActivator(LogicalKeyboardKey.enter): widget.onNext,
-          SingleActivator(LogicalKeyboardKey.escape): widget.onExit,
+        focusNode: _focusNode,
+        autofocus: widget.active,
+        canRequestFocus: widget.active,
+        skipTraversal: !widget.active,
+        onKeyEvent: (node, event) {
+          if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
+          final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowDown ||
+              key == LogicalKeyboardKey.arrowRight ||
+              key == LogicalKeyboardKey.select ||
+              key == LogicalKeyboardKey.enter ||
+              key == LogicalKeyboardKey.numpadEnter) {
+            widget.onNext();
+            return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowLeft) {
+            (widget.onPrevious ?? widget.onBackTwo)();
+            return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.escape) {
+            widget.onExit();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
         },
         child: Listener(
           // Opaque: while active the page underneath ignores pointers, and a
@@ -144,29 +155,28 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
             _down = null;
           },
           child: Stack(children: [
-        Positioned.fill(child: IgnorePointer(ignoring: widget.active, child: widget.child)),
-        if (widget.active)
-          Positioned(
-            top: 8,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Material(
-                color: theme.colorScheme.inverseSurface.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(20),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  child: Text(
-                    context.tr('Reader mode: arrows or OK to step; Back to stop'),
-                    style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onInverseSurface),
+            Positioned.fill(child: IgnorePointer(ignoring: widget.active, child: widget.child)),
+            if (widget.active)
+              Positioned(
+                top: 8,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Material(
+                    color: theme.colorScheme.inverseSurface.withValues(alpha: 0.88),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      child: Text(
+                        context.tr('Reader mode: arrows or OK to step; Back to stop'),
+                        style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onInverseSurface),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
           ]),
         ),
-      ),
       ),
     );
   }

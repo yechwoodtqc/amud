@@ -56,7 +56,7 @@ void main() {
         child: const SizedBox.expand(),
       ),
     ));
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
