@@ -102,8 +102,25 @@ ThemeData buildTheme(AppSettings s, Brightness brightness) {
           surfaceContainerHighest: warm(seeded.surfaceContainerHighest, dark ? const Color(0xFF4A360F) : const Color(0xFFF0D599), dark ? 0.9 : 1),
           onSurface: warm(seeded.onSurface, dark ? const Color(0xFFF1E3CC) : const Color(0xFF3B2F20), 0.8),
         );
+  // A high-contrast outline is more reliable than Material's soft
+  // focus fill on small D-pad screens. Apply it consistently to every
+  // standard button family, including compact toolbar IconButtons.
+  final dpadButtonStyle = ButtonStyle(
+    side: WidgetStateProperty.resolveWith((states) => BorderSide(
+          color: states.contains(WidgetState.focused) ? scheme.primary : Colors.transparent,
+          width: 2,
+        )),
+    shape: const WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
+    overlayColor: WidgetStateProperty.resolveWith((states) =>
+        states.contains(WidgetState.focused) ? scheme.primary.withValues(alpha: 0.14) : null),
+  );
   final base = ThemeData(
     colorScheme: scheme,
+    iconButtonTheme: IconButtonThemeData(style: dpadButtonStyle),
+    textButtonTheme: TextButtonThemeData(style: dpadButtonStyle),
+    filledButtonTheme: FilledButtonThemeData(style: dpadButtonStyle),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: dpadButtonStyle),
+    elevatedButtonTheme: ElevatedButtonThemeData(style: dpadButtonStyle),
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
     // Make keyboard/D-pad focus unmistakable throughout Material controls.
