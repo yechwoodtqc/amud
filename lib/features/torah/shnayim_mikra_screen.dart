@@ -643,7 +643,7 @@ class _AliyahState extends ConsumerState<_Aliyah> {
               if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.pageDown) {
                 if (_scroll.hasClients) {
                   final p = _scroll.position;
-                  _scroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                  _scroll.animateTo((p.pixels + p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent).toDouble(),
                       duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
                 }
                 return KeyEventResult.handled;
@@ -651,7 +651,7 @@ class _AliyahState extends ConsumerState<_Aliyah> {
               if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.pageUp) {
                 if (_scroll.hasClients) {
                   final p = _scroll.position;
-                  _scroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent),
+                  _scroll.animateTo((p.pixels - p.viewportDimension * 0.78).clamp(p.minScrollExtent, p.maxScrollExtent).toDouble(),
                       duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
                 }
                 return KeyEventResult.handled;
