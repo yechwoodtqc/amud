@@ -64,6 +64,33 @@ void main() {
     expect(log, ['next', 'previous', 'next', 'exit']);
   });
 
+  testWidgets('active reader mode keeps hidden page controls out of focus', (tester) async {
+    var underlyingActivated = false;
+    final log = <String>[];
+    await tester.pumpWidget(MaterialApp(
+      home: ReaderModeLayer(
+        active: true,
+        onNext: () => log.add('next'),
+        onBackTwo: () => log.add('back2'),
+        onExit: () => log.add('exit'),
+        child: Center(
+          child: TextButton(
+            autofocus: true,
+            onPressed: () => underlyingActivated = true,
+            child: const Text('Hidden page action'),
+          ),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(tester.binding.focusManager.primaryFocus?.debugLabel, 'Reader mode D-pad');
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pump();
+    expect(log, ['next']);
+    expect(underlyingActivated, isFalse);
+  });
+
   testWidgets('system Back exits reader mode instead of leaving the page', (tester) async {
     final log = <String>[];
     await tester.pumpWidget(MaterialApp(
