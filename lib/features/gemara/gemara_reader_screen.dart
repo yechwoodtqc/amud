@@ -569,7 +569,7 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
                           _queuePageProgress();
                         },
                         onHoldWord: (w) => _startReader(w.word.segment),
-                        selected: _selected,
+                        selected: _selected ?? _visible,
                         markedComments: tapMarks?.comments ?? const {},
                         wordMarks: tapMarks?.words,
                         highlights: highlights,
