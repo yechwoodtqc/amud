@@ -18,6 +18,8 @@ class DpadNavigation extends StatelessWidget {
         child: Shortcuts(
           shortcuts: const {
             SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
           },
           child: child,
         ),

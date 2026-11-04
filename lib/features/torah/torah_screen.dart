@@ -678,9 +678,10 @@ class _TorahReaderScreenState extends ConsumerState<TorahReaderScreen> with Focu
         padding: pagePadding(context, EdgeInsets.symmetric(horizontal: ts.gutter(MediaQuery.sizeOf(context).width, min: 16)).copyWith(top: 8, bottom: 24)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           for (var n = 1; n <= count; n++)
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
+            InkWell(
+              borderRadius: BorderRadius.circular(10),
               // Tap marks a se'if; holding it starts reader mode from there.
+              // InkWell is keyboard-focusable, so D-pad users can select it too.
               onTap: () => setState(() => _current = _current == n - 1 ? null : n - 1),
               onLongPress: () => _startReader(n - 1),
               child: Container(

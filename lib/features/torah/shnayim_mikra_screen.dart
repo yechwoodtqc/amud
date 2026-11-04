@@ -644,8 +644,9 @@ class _AliyahState extends ConsumerState<_Aliyah> {
                     // A verse at a time is marked whole; running text
                     // marks the tapped verse within it.
                     if (single)
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        // Keep the verse action available to hardware focus as well as touch.
                         onTap: () => _toggle(units[i].first.at),
                         // Holding a verse starts reader mode from it.
                         onLongPress: () {

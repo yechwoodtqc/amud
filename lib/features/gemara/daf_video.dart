@@ -329,8 +329,7 @@ class _DafVideoScreenState extends State<DafVideoScreen> {
         decoration: BoxDecoration(
             gradient: LinearGradient(begin: from, end: -from, colors: const [Colors.black54, Colors.transparent])),
         child: child);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
       onTap: _touch,
       child: Stack(alignment: Alignment.center, fit: full ? StackFit.expand : StackFit.loose, children: [
         // On the web the video is an HTML element that would take

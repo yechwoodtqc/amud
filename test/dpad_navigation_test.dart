@@ -27,7 +27,7 @@ void main() {
     expect(Focus.of(tester.element(find.text('Second'))).hasFocus, isTrue);
   });
 
-  testWidgets('D-pad SELECT activates the focused control', (tester) async {
+  testWidgets('D-pad SELECT and Enter activate the focused control', (tester) async {
     var activated = false;
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
@@ -43,7 +43,11 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pump();
+    expect(activated, isTrue);
 
+    activated = false;
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
     expect(activated, isTrue);
   });
 }
