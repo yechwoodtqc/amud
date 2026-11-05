@@ -108,6 +108,24 @@ void main() {
     expect(log, ['exit']);
   });
 
+  testWidgets('physical Go Back key exits reader mode', (tester) async {
+    final log = <String>[];
+    await tester.pumpWidget(MaterialApp(
+      home: ReaderModeLayer(
+        active: true,
+        onNext: () => log.add('next'),
+        onBackTwo: () => log.add('back2'),
+        onPrevious: () => log.add('previous'),
+        onExit: () => log.add('exit'),
+        child: const SizedBox.expand(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.goBack);
+    await tester.pump();
+    expect(log, ['exit']);
+  });
+
   testWidgets('reader mode Exit button does not advance the text', (tester) async {
     final log = <String>[];
     await tester.pumpWidget(MaterialApp(
