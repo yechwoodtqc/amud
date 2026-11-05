@@ -27,23 +27,23 @@ class DpadNavigation extends StatelessWidget {
               final focusedContext = FocusManager.instance.primaryFocus?.context;
               if (focusedContext == null) return;
               final navigator = Navigator.maybeOf(focusedContext);
-              if (navigator != null) unawaited(navigator.maybePop());
+              if (navigator != null) unawaited(navigator.maybePop().then<void>((_) {}));
             },
           },
           child: Shortcuts(
-          shortcuts: const {
+            shortcuts: const {
             // Make directional navigation explicit. On small Android devices
             // the platform key map can send arrows to a scrollable before
             // focus traversal gets a chance to move focus.
-            SingleActivator(LogicalKeyboardKey.arrowUp): DirectionalFocusIntent(TraversalDirection.up),
-            SingleActivator(LogicalKeyboardKey.arrowDown): DirectionalFocusIntent(TraversalDirection.down),
-            SingleActivator(LogicalKeyboardKey.arrowLeft): DirectionalFocusIntent(TraversalDirection.left),
-            SingleActivator(LogicalKeyboardKey.arrowRight): DirectionalFocusIntent(TraversalDirection.right),
-            SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
-            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-            SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
-          },
-          child: child,
+              SingleActivator(LogicalKeyboardKey.arrowUp): DirectionalFocusIntent(TraversalDirection.up),
+              SingleActivator(LogicalKeyboardKey.arrowDown): DirectionalFocusIntent(TraversalDirection.down),
+              SingleActivator(LogicalKeyboardKey.arrowLeft): DirectionalFocusIntent(TraversalDirection.left),
+              SingleActivator(LogicalKeyboardKey.arrowRight): DirectionalFocusIntent(TraversalDirection.right),
+              SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
+              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+              SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
+            },
+            child: child,
           ),
         ),
       );
