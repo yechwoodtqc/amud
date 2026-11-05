@@ -99,6 +99,37 @@ void main() {
     expect(activated, isTrue);
   });
 
+  testWidgets('hardware Go Back key pops the currently focused route', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: DpadNavigation(
+        child: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              autofocus: true,
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => Scaffold(
+                  body: TextButton(
+                    autofocus: true,
+                    onPressed: _noop,
+                    child: const Text('Details'),
+                  ),
+                ),
+              )),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    ));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(find.text('Details'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.goBack);
+    await tester.pumpAndSettle();
+    expect(find.text('Open'), findsOneWidget);
+  });
+
   testWidgets('reader ancestor does not swallow SELECT from a focused button', (tester) async {
     var activated = false;
     await tester.pumpWidget(MaterialApp(
