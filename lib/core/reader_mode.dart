@@ -107,6 +107,7 @@ class _ReaderModeLayerState extends State<ReaderModeLayer> {
             const SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious ?? widget.onBackTwo,
             const SingleActivator(LogicalKeyboardKey.select): widget.onExit,
             const SingleActivator(LogicalKeyboardKey.escape): widget.onExit,
+            const SingleActivator(LogicalKeyboardKey.goBack): widget.onExit,
           },
         },
         child: Stack(children: [
