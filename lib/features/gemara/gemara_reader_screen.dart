@@ -800,7 +800,11 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
         if (event.logicalKey == LogicalKeyboardKey.select ||
             event.logicalKey == LogicalKeyboardKey.enter ||
             event.logicalKey == LogicalKeyboardKey.numpadEnter) {
-          _startReader(_selected ?? _visible);
+          // The text surface is the initial focus target. Move into the
+          // focusable passage controls first; reader mode remains available
+          // from its toolbar button. Starting reader mode here trapped the
+          // D-pad outside the controls embedded in the reading view.
+          node.nextFocus();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
