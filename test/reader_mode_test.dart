@@ -121,7 +121,10 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
-    await tester.sendKeyEvent(LogicalKeyboardKey.goBack);
+    await tester.sendKeyEvent(
+      LogicalKeyboardKey.goBack,
+      physicalKey: PhysicalKeyboardKey.browserBack,
+    );
     await tester.pump();
     expect(log, ['exit']);
   });
