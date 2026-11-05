@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 
@@ -15,7 +17,20 @@ class DpadNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FocusTraversalGroup(
         policy: ReadingOrderTraversalPolicy(),
-        child: Shortcuts(
+        child: CallbackShortcuts(
+          // Some feature phones deliver the physical Back key as a keyboard
+          // event (GO_BACK), rather than as Android's system-pop callback.
+          // Resolve the Navigator from the currently focused control so this
+          // works in the active nested tab, dialog, or pushed reader route.
+          bindings: {
+            const SingleActivator(LogicalKeyboardKey.goBack): () {
+              final focusedContext = FocusManager.instance.primaryFocus?.context;
+              if (focusedContext == null) return;
+              final navigator = Navigator.maybeOf(focusedContext);
+              if (navigator != null) unawaited(navigator.maybePop());
+            },
+          },
+          child: Shortcuts(
           shortcuts: const {
             // Make directional navigation explicit. On small Android devices
             // the platform key map can send arrows to a scrollable before
@@ -29,6 +44,7 @@ class DpadNavigation extends StatelessWidget {
             SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
           },
           child: child,
+          ),
         ),
       );
 }
