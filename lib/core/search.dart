@@ -230,7 +230,7 @@ class PageSearchBar extends ConsumerStatefulWidget {
   const PageSearchBar({super.key, required this.page, required this.hint});
 
   /// Height to reserve under an app bar.
-  static const height = 48.0;
+  static const height = 38.0;
 
   @override
   ConsumerState<PageSearchBar> createState() => _PageSearchBarState();
@@ -264,19 +264,22 @@ class _PageSearchBarState extends ConsumerState<PageSearchBar> {
     });
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
+      padding: const EdgeInsets.fromLTRB(8, 1, 8, 2),
       child: SearchBar(
         controller: _controller,
         hintText: widget.hint,
         elevation: const WidgetStatePropertyAll(0),
         backgroundColor: WidgetStatePropertyAll(theme.colorScheme.surfaceContainerHigh),
-        constraints: const BoxConstraints(minHeight: 40, maxHeight: 40),
-        leading: const Icon(Icons.search, size: 18),
+        constraints: const BoxConstraints(minHeight: 32, maxHeight: 32),
+        leading: const Icon(Icons.search, size: 16),
         trailing: [
           if (_controller.text.isNotEmpty)
             IconButton(
               tooltip: context.tr('Clear'),
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close, size: 16),
+              visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+              padding: EdgeInsets.zero,
               onPressed: () {
                 _controller.clear();
                 ref.read(pageSearchProvider(widget.page).notifier).state = '';
