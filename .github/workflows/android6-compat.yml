@@ -27,6 +27,7 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.32.8
+          cache: true
       - name: Resolve dependencies
         run: flutter pub get
       - name: Run Flutter widget and regression tests
