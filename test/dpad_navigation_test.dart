@@ -101,22 +101,21 @@ void main() {
 
   testWidgets('hardware Go Back key pops the currently focused route', (tester) async {
     await tester.pumpWidget(MaterialApp(
-      home: DpadNavigation(
-        child: Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              autofocus: true,
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (_) => Scaffold(
-                  body: TextButton(
-                    autofocus: true,
-                    onPressed: _noop,
-                    child: const Text('Details'),
-                  ),
+      builder: (context, child) => DpadNavigation(child: child!),
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            autofocus: true,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => Scaffold(
+                body: TextButton(
+                  autofocus: true,
+                  onPressed: _noop,
+                  child: const Text('Details'),
                 ),
-              )),
-              child: const Text('Open'),
-            ),
+              ),
+            )),
+            child: const Text('Open'),
           ),
         ),
       ),
