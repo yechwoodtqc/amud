@@ -45,7 +45,11 @@ class HomeScreen extends ConsumerWidget {
             // Several new features at once make a tall banner: it scrolls
             // within at most half the screen rather than pushing Home off it.
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.5),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height < 500 || MediaQuery.sizeOf(context).width < 360
+                    ? 64
+                    : MediaQuery.sizeOf(context).height * 0.5,
+              ),
               child: const SingleChildScrollView(child: Column(children: [UpdateBanner(), WhatsNewBanner()])),
             ),
             // Searches everything: prayers, zmanim, Torah, pages, settings.
