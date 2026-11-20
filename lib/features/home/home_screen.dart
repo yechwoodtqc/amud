@@ -308,10 +308,9 @@ Future<void> _configure(
   await Navigator.of(context, rootNavigator: true).push<void>(
     MaterialPageRoute<void>(
       fullscreenDialog: true,
-      builder: (pageContext) => StatefulBuilder(
+      builder: (_) => StatefulBuilder(
         builder: (ctx, setState) {
           final height = MediaQuery.sizeOf(ctx).height;
-          final theme = Theme.of(ctx);
           return Scaffold(
             appBar: AppBar(
               toolbarHeight: 40,
