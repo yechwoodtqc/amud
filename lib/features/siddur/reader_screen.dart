@@ -272,8 +272,16 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
 
     final title = node == null ? context.term(widget.book) : context.prayerTitle(s, node.en, node.he);
     final bar = AppBar(
-        toolbarHeight: 48,
+        toolbarHeight: 40,
         leadingWidth: 40,
+        leading: IconButton(
+          tooltip: context.tr('Back'),
+          icon: const Icon(Icons.arrow_back, size: 20),
+          visualDensity: VisualDensity.compact,
+          constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+          padding: EdgeInsets.zero,
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
         titleSpacing: 4,
         title: MediaQuery.sizeOf(context).width < 360
             ? const SizedBox.shrink()
