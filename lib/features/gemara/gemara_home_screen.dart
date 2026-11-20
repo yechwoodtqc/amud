@@ -165,7 +165,7 @@ class _StudyHomeScreenState extends ConsumerState<StudyHomeScreen> {
           final shortcuts = [
             if (mine.firstOrNull case final r?)
               _Shortcut(
-                icon: Icons.play_circle_outline,
+                icon: Icons.menu_book,
                 label: context.tr('Continue'),
                 place: title(r.tractate, r.amud),
                 onTap: () => context.push(studyPath(r.tractate, r.amud, segment: r.segment)),
@@ -362,15 +362,13 @@ class _Shortcut extends StatelessWidget {
   final bool done;
   final VoidCallback onTap;
 
-  /// Beside the place, inside the card (Daf Yomi's video).
-  final Widget? trailing;
-  const _Shortcut({required this.icon, required this.label, required this.place, required this.onTap, this.done = false, this.trailing});
+  const _Shortcut({required this.icon, required this.label, required this.place, required this.onTap, this.done = false});
 
   /// How wide it is with the label and the place each on one line.
   double width(BuildContext context) {
     final theme = Theme.of(context);
     final text = math.max(textWidth(context, label, theme.textTheme.labelMedium), textWidth(context, place, theme.textTheme.titleMedium));
-    return 12 + 24 + 10 + text + (trailing == null ? 0 : 40) + 12 + 2;
+    return 12 + 24 + 10 + text + 12 + 2;
   }
 
   @override
@@ -392,7 +390,6 @@ class _Shortcut extends StatelessWidget {
                 Text(place, style: theme.textTheme.titleMedium),
               ]),
             ),
-            ?trailing,
           ]),
         ),
       ),
@@ -453,7 +450,7 @@ class _BookCard extends ConsumerWidget {
 }
 
 /// A book's units: for a tractate, its dafim under their perakim (each daf
-/// a tile with its two amudim and a video mark); for a masechta, its
+/// a tile with its two amudim); for a masechta, its
 /// perakim. A check marks a unit completed, a dot a bookmark, a ring today's
 /// portion.
 class StudyBookScreen extends ConsumerWidget {
