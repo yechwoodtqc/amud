@@ -457,9 +457,9 @@ class AdaptiveShell extends ConsumerWidget {
           selectedIndex: selected,
           onDestinationSelected: onTap,
           labelBehavior: labels ? NavigationDestinationLabelBehavior.alwaysShow : NavigationDestinationLabelBehavior.alwaysHide,
-          height: labels ? 56 : 48,
+          height: labels ? 48 : 40,
           destinations: [
-            for (final t in items) NavigationDestination(icon: Icon(t.outlined, size: 18), selectedIcon: Icon(t.selected, size: 18), label: context.tr(t.label)),
+            for (final t in items) NavigationDestination(icon: Icon(t.outlined, size: 16), selectedIcon: Icon(t.selected, size: 16), label: context.tr(t.label)),
           ],
         ),
       ),
