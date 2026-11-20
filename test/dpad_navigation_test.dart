@@ -180,6 +180,8 @@ void main() {
     await tester.pump();
     final focused = FocusManager.instance.primaryFocus?.context;
     expect(focused?.findAncestorWidgetOfExactType<NavigationBar>(), isNotNull);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pump();
     expect(selected, 1);
