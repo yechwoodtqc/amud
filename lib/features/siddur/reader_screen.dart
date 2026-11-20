@@ -407,7 +407,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
   List<Widget> _barActions(BuildContext context, String title, HDate date, bool picked) {
     final compass = ref.watch(readerCompassTurnProvider) != null;
     return fitBarActions(context, MediaQuery.sizeOf(context).width < 360 ? '' : title,
-        spare: compass ? const [2, 1, 3, 4] : const [1, 0, 2], [
+        compact: true, spare: compass ? const [2, 1, 3, 4] : const [1, 0, 2], [
         if (compass) const BarTool.custom(ReaderCompass()),
         BarTool(tooltip: context.tr('Why today?'), icon: const Icon(Icons.help_outline), onPressed: () => openDayGuide(context, date)),
         BarTool(
@@ -996,19 +996,27 @@ class DayBanner extends ConsumerWidget {
     return Material(
       color: theme.colorScheme.surfaceContainer,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(context).width < 360 ? 8 : 16,
+          vertical: MediaQuery.sizeOf(context).width < 360 || MediaQuery.sizeOf(context).height < 500 ? 3 : 8,
+        ),
         child: Row(children: [
           Expanded(
             child: Text(
               '${formatPlainDate(date.plainDate())} · ${date.render(context.hebcalLocale)}${labels.isEmpty ? '' : ' · ${labels.join(', ')}'}',
               style: theme.textTheme.bodySmall,
-              maxLines: 2,
+              maxLines: MediaQuery.sizeOf(context).width < 360 || MediaQuery.sizeOf(context).height < 500 ? 1 : 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           if (picked)
             TextButton(
               onPressed: () => ref.read(readerDateProvider.notifier).state = null,
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                minimumSize: const Size(0, 28),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
               child: Text(context.tr('Today')),
             ),
         ]),
