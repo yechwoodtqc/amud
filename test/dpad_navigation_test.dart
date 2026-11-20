@@ -151,6 +151,31 @@ void main() {
     expect(Focus.of(tester.element(find.text('Next control'))).hasFocus, isTrue);
   });
 
+  testWidgets('slider adjusts with Left and Right and leaves with Up and Down', (tester) async {
+    var value = 0.5;
+    await tester.pumpWidget(MaterialApp(
+      home: DpadNavigation(
+        child: Scaffold(
+          body: Column(children: [
+            Slider(
+              autofocus: true,
+              value: value,
+              onChanged: (v) => value = v,
+            ),
+            TextButton(onPressed: _noop, child: const Text('After slider')),
+          ]),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(value, greaterThan(0.5));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.text('After slider'))).hasFocus, isTrue);
+  });
+
   testWidgets('reader ancestor does not swallow SELECT from a focused button', (tester) async {
     var activated = false;
     await tester.pumpWidget(MaterialApp(
