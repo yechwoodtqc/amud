@@ -371,21 +371,31 @@ class BarTool {
 /// An app bar's [tools], in their order on the bar. Where they would cut
 /// the [title] short (narrow phones, large text: "Shach…"), those listed
 /// in [spare], first first, go into a "More" menu instead.
-List<Widget> fitBarActions(BuildContext context, String title, List<BarTool> tools, {required List<int> spare}) {
+List<Widget> fitBarActions(BuildContext context, String title, List<BarTool> tools, {required List<int> spare, bool compact = false}) {
   final scale = MediaQuery.textScalerOf(context).scale(1);
   // Room for the whole title, or about nine letters of a long one, beside
   // the back button and the title's spacing.
   final need = math.min(textWidth(context, title, Theme.of(context).appBarTheme.titleTextStyle ?? Theme.of(context).textTheme.titleLarge),
           120 * scale) +
       8;
-  final fit = ((MediaQuery.sizeOf(context).width - 72 - need) / 48).floor();
+  final actionExtent = compact ? 36.0 : 48.0;
+  final fit = ((MediaQuery.sizeOf(context).width - 72 - need) / actionExtent).floor();
   final menu = tools.length <= fit ? const <int>{} : spare.take(math.max(0, tools.length - math.max(0, fit - 1))).toSet();
   Widget icon(BarTool t) => t.isSelected == true ? t.selectedIcon ?? t.icon : t.icon;
   return [
     for (final (i, t) in tools.indexed)
       if (!menu.contains(i))
-        t.custom ??
-            IconButton(tooltip: t.tooltip, icon: t.icon, selectedIcon: t.selectedIcon, isSelected: t.isSelected, onPressed: t.onPressed),
+         t.custom ??
+            IconButton(
+              tooltip: t.tooltip,
+              icon: t.icon,
+              selectedIcon: t.selectedIcon,
+              isSelected: t.isSelected,
+              onPressed: t.onPressed,
+              visualDensity: compact ? VisualDensity.compact : null,
+              constraints: compact ? const BoxConstraints.tightFor(width: 36, height: 36) : null,
+              padding: compact ? EdgeInsets.zero : null,
+            ),
     if (menu.isNotEmpty)
       PopupMenuButton<VoidCallback>(
         tooltip: context.tr('More'),
