@@ -453,14 +453,92 @@ class AdaptiveShell extends ConsumerWidget {
       body: _swipeable(focus, items),
       bottomNavigationBar: away(
         vertical: true,
-        NavigationBar(
-          selectedIndex: selected,
-          onDestinationSelected: onTap,
-          labelBehavior: labels ? NavigationDestinationLabelBehavior.alwaysShow : NavigationDestinationLabelBehavior.alwaysHide,
-          height: labels ? 48 : 40,
-          destinations: [
-            for (final t in items) NavigationDestination(icon: Icon(t.outlined, size: 16), selectedIcon: Icon(t.selected, size: 16), label: context.tr(t.label)),
-          ],
+        _DpadNavigationBar(items: items, selected: selected, labels: labels, onTap: onTap),
+      ),
+    );
+  }
+}
+
+
+/// Compact Material tab bar with explicit focus order and a visible D-pad
+/// outline. NavigationBar's internal focus group did not move reliably on
+/// directional keypads, so each destination owns its focus and activation.
+class _DpadNavigationBar extends StatelessWidget {
+  final List<NavItem> items;
+  final int selected;
+  final bool labels;
+  final ValueChanged<int> onTap;
+
+  const _DpadNavigationBar({
+    required this.items,
+    required this.selected,
+    required this.labels,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surface,
+      child: SizedBox(
+        height: labels ? 48 : 40,
+        child: FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
+          child: Row(
+            children: [
+              for (final (i, item) in items.indexed)
+                Expanded(
+                  child: FocusTraversalOrder(
+                    order: NumericFocusOrder(i.toDouble()),
+                    child: DpadFocusable(
+                      key: ValueKey('bottom-nav-${item.id}'),
+                      autofocus: i == selected,
+                      onActivate: () => onTap(i),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Tooltip(
+                        message: context.tr(item.label),
+                        child: InkWell(
+                          canRequestFocus: false,
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () => onTap(i),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 120),
+                            padding: EdgeInsets.symmetric(horizontal: 2, vertical: labels ? 2 : 6),
+                            decoration: BoxDecoration(
+                              color: i == selected ? theme.colorScheme.secondaryContainer : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  i == selected ? item.selected : item.outlined,
+                                  size: 16,
+                                  color: i == selected ? theme.colorScheme.onSecondaryContainer : theme.colorScheme.onSurfaceVariant,
+                                ),
+                                if (labels)
+                                  Text(
+                                    context.tr(item.label),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      fontSize: 10,
+                                      height: 1.1,
+                                      color: i == selected ? theme.colorScheme.onSecondaryContainer : theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
