@@ -133,6 +133,24 @@ void main() {
     expect(find.text('Open'), findsOneWidget);
   });
 
+  testWidgets('D-pad Up and Down leave a text field for the next control', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: DpadNavigation(
+        child: Scaffold(
+          body: Column(children: [
+            const TextField(autofocus: true, maxLines: 2),
+            TextButton(onPressed: _noop, child: const Text('Next control')),
+          ]),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<EditableText>(), isNotNull);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.text('Next control'))).hasFocus, isTrue);
+  });
+
   testWidgets('reader ancestor does not swallow SELECT from a focused button', (tester) async {
     var activated = false;
     await tester.pumpWidget(MaterialApp(
