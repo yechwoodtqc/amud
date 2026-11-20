@@ -305,70 +305,91 @@ class _EditableCard extends ConsumerWidget {
 Future<void> _configure(
     BuildContext context, WidgetRef ref, CardType t, CardConfig c, double Function(int span) widthOf) async {
   var draft = c;
-  await showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setState) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
-        child: SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.9),
-            // The preview stays in view above the settings, and Save
-            // below them; the settings scroll between.
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text(context.tr('Configure {card}', {'card': context.tr(t.title)}), style: Theme.of(ctx).textTheme.titleLarge),
-                const SizedBox(height: 12),
-                LayoutBuilder(
-                  builder: (ctx, box) => Align(
-                    alignment: AlignmentDirectional.centerStart,
+  await Navigator.of(context, rootNavigator: true).push<void>(
+    MaterialPageRoute<void>(
+      fullscreenDialog: true,
+      builder: (pageContext) => StatefulBuilder(
+        builder: (ctx, setState) {
+          final height = MediaQuery.sizeOf(ctx).height;
+          final theme = Theme.of(ctx);
+          return Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 40,
+              leading: IconButton(
+                tooltip: ctx.tr('Back'),
+                icon: const Icon(Icons.arrow_back, size: 20),
+                visualDensity: VisualDensity.compact,
+                constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.pop(ctx),
+              ),
+              title: Text(
+                ctx.tr('Configure {card}', {'card': ctx.tr(t.title)}),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
                     child: ConstrainedBox(
-                      // A tall card (the calendar) scrolls rather than
-                      // pushing its settings off the sheet.
-                      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.35),
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          width: widthOf(draft.span).clamp(0, box.maxWidth).toDouble(),
-                          child: AbsorbPointer(child: t.build(ctx, ref, draft)),
+                      constraints: BoxConstraints(maxHeight: height * 0.22),
+                      child: LayoutBuilder(
+                        builder: (ctx, box) => SingleChildScrollView(
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: SizedBox(
+                              width: widthOf(draft.span).clamp(0, box.maxWidth).toDouble(),
+                              child: AbsorbPointer(child: t.build(ctx, ref, draft)),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      SegmentedButton<int>(
-                        segments: [
-                          ButtonSegment(value: 1, icon: const Icon(Icons.grid_view), label: Text(context.tr('Compact'))),
-                          ButtonSegment(value: 2, icon: const Icon(Icons.view_agenda_outlined), label: Text(context.tr('Wide'))),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SegmentedButton<int>(
+                            style: const ButtonStyle(visualDensity: VisualDensity.compact),
+                            segments: [
+                              ButtonSegment(value: 1, icon: const Icon(Icons.grid_view), label: Text(ctx.tr('Compact'))),
+                              ButtonSegment(value: 2, icon: const Icon(Icons.view_agenda_outlined), label: Text(ctx.tr('Wide'))),
+                            ],
+                            selected: {draft.span >= 2 ? 2 : 1},
+                            onSelectionChanged: (v) => setState(() => draft = draft.copyWith(span: v.first)),
+                          ),
+                          if (t.editor != null) ...[
+                            const SizedBox(height: 10),
+                            t.editor!(ctx, ref, draft, (v) => setState(() => draft = v)),
+                          ],
                         ],
-                        selected: {draft.span >= 2 ? 2 : 1},
-                        onSelectionChanged: (v) => setState(() => draft = draft.copyWith(span: v.first)),
                       ),
-                      if (t.editor != null) ...[
-                        const SizedBox(height: 12),
-                        t.editor!(ctx, ref, draft, (v) => setState(() => draft = v)),
-                      ],
-                    ]),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () {
-                    ref.read(dashboardProvider.notifier).replace(draft);
-                    Navigator.pop(ctx);
-                  },
-                  child: Text(context.tr('Save')),
-                ),
-              ]),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          ref.read(dashboardProvider.notifier).replace(draft);
+                          Navigator.pop(ctx);
+                        },
+                        child: Text(ctx.tr('Save')),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     ),
   );
