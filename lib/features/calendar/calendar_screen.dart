@@ -18,10 +18,10 @@ class CalendarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: Text(context.tr('Calendar')), actions: [
+        appBar: AppBar(toolbarHeight: 44, title: Text(context.tr('Calendar'), style: Theme.of(context).textTheme.titleMedium), actions: [
           TextButton(onPressed: () => resetCalendar(ref), child: Text(context.tr('Today'))),
         ]),
-        body: ListView(padding: pagePadding(context, const EdgeInsets.fromLTRB(12, 0, 12, 32)), children: const [CalendarView()]),
+        body: ListView(padding: pagePadding(context, const EdgeInsets.fromLTRB(4, 0, 4, 16)), children: const [CalendarView()]),
       );
 }
 
@@ -80,14 +80,14 @@ class CalendarView extends ConsumerWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [
-          IconButton(onPressed: () => shift(-1), icon: const Icon(Icons.chevron_left)),
+          IconButton(visualDensity: VisualDensity.compact, constraints: const BoxConstraints.tightFor(width: 36, height: 36), padding: EdgeInsets.zero, onPressed: () => shift(-1), icon: const Icon(Icons.chevron_left, size: 20)),
           Expanded(
             child: Column(children: [
               Text(formatMonth(ym.$1, ym.$2), style: theme.textTheme.titleLarge),
               Text(hebRange, style: theme.textTheme.bodySmall),
             ]),
           ),
-          IconButton(onPressed: () => shift(1), icon: const Icon(Icons.chevron_right)),
+          IconButton(visualDensity: VisualDensity.compact, constraints: const BoxConstraints.tightFor(width: 36, height: 36), padding: EdgeInsets.zero, onPressed: () => shift(1), icon: const Icon(Icons.chevron_right, size: 20)),
         ]),
         Row(children: [
           for (final d in const ['S', 'M', 'T', 'W', 'T', 'F', 'Sh'])
@@ -98,7 +98,7 @@ class CalendarView extends ConsumerWidget {
           crossAxisCount: 7,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: compact ? 0.9 : 0.8,
+          childAspectRatio: compact ? 1.0 : 1.05,
           children: [
             for (var i = 0; i < lead; i++) const SizedBox.shrink(),
             for (var d = 1; d <= days; d++)
@@ -111,10 +111,11 @@ class CalendarView extends ConsumerWidget {
                 final isSel = pd == selected;
                 final isToday = pd == today;
                 return InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  autofocus: isSel,
+                  borderRadius: BorderRadius.circular(8),
                   onTap: () => ref.read(_selectedProvider.notifier).state = pd,
                   child: Container(
-                    margin: const EdgeInsets.all(2),
+                    margin: const EdgeInsets.all(1),
                     decoration: BoxDecoration(
                       color: isSel ? theme.colorScheme.primaryContainer : (chag ? colors.todayFill : null),
                       borderRadius: BorderRadius.circular(10),
