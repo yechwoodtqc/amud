@@ -7,7 +7,7 @@ on:
       - compat/android6-api23
 
 concurrency:
-  group: android6-compat-v4-${{ github.ref }}
+  group: android6-compat-v5-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -23,6 +23,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
