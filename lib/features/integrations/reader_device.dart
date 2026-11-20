@@ -37,8 +37,6 @@ class _ReaderDeviceState extends ConsumerState<ReaderDevice>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     ref.read(routerProvider).routeInformationProvider.addListener(_sync);
-    videoPlaying.addListener(_sync);
-    videoFullscreen.addListener(_sync);
     ref.listenManual(
       settingsProvider.select((s) => (s.keepReaderAwake, s.fullscreenReader, s.readerDnd)),
       (_, _) => _sync(),
@@ -55,8 +53,8 @@ class _ReaderDeviceState extends ConsumerState<ReaderDevice>
           ref.read(routerProvider).routeInformationProvider.value.uri.path,
         );
     final state = (
-      (reading && s.keepReaderAwake) || videoPlaying.value,
-      (reading && s.fullscreenReader) || (_resumed && videoFullscreen.value),
+      reading && s.keepReaderAwake,
+      reading && s.fullscreenReader,
       reading && s.readerDnd,
     );
     if (_last == state) return;
@@ -110,8 +108,6 @@ class _ReaderDeviceState extends ConsumerState<ReaderDevice>
       }));
     }
     ref.read(routerProvider).routeInformationProvider.removeListener(_sync);
-    videoPlaying.removeListener(_sync);
-    videoFullscreen.removeListener(_sync);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(
       _pending.then((_) => WakelockPlus.disable()).catchError((Object e) {
