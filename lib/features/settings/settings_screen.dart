@@ -48,7 +48,7 @@ class SettingsScreen extends ConsumerWidget {
     final allOpen = _sections.every(s.expandedSettings.contains);
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 48,
+        toolbarHeight: 40,
         title: Text(context.tr('Settings'), style: Theme.of(context).textTheme.titleMedium),
         actions: [
           IconButton(
