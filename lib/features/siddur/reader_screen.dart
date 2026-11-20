@@ -440,9 +440,13 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
     // Hardware Up/Down advances by roughly one printed text line, not most
     // of a screen. This prevents a fast D-pad press from skipping unread
     // passages on a small feature-phone display.
+    final settings = readerSettings(ref.read(settingsProvider), widget.book);
+    // Stay below a full line at every user-selected text size: repeated
+    // Down presses reveal the next line without jumping over unseen text.
+    final step = (TypeScale.of(settings).line * 0.85).clamp(14.0, 24.0).toDouble();
     _offsetScroll.animateScroll(
-      offset: direction * 28.0,
-      duration: const Duration(milliseconds: 110),
+      offset: direction * step,
+      duration: const Duration(milliseconds: 100),
       curve: Curves.linear,
     );
   }
