@@ -483,6 +483,7 @@ class DpadNavigationBar extends StatelessWidget {
     return Material(
       color: theme.colorScheme.surface,
       child: SizedBox(
+        key: const Key('dpad-bottom-navigation-size'),
         height: labels ? 48 : 40,
         child: FocusTraversalGroup(
           policy: OrderedTraversalPolicy(),
