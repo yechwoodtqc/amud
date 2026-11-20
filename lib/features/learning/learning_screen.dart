@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hebcal/hebcal.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/l10n.dart';
 import '../../core/format.dart';
@@ -67,9 +66,8 @@ class LearningScreen extends ConsumerWidget {
                   icon: const Icon(Icons.menu_book_outlined),
                   onPressed: () => context.push(path),
                 ),
-              null => ev?.url() == null
-                  ? null
-                  : IconButton(icon: const Icon(Icons.open_in_new), onPressed: () => launchUrl(Uri.parse(ev!.url()!))),
+              // No external browser or web video launches from daily learning.
+              null => null,
             },
             onLongPress: () => ref.read(settingsProvider.notifier).update((x) {
               final l = [...x.learningSchedules];
@@ -79,7 +77,7 @@ class LearningScreen extends ConsumerWidget {
           ),
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text(context.tr('Long-press to star a schedule. Links open the text on Sefaria.'), style: theme.textTheme.bodySmall),
+          child: Text(context.tr('Long-press to star a schedule. Available readings open in the app.'), style: theme.textTheme.bodySmall),
         ),
       ]),
     );
