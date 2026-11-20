@@ -179,7 +179,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.pump();
     final focused = FocusManager.instance.primaryFocus?.context;
-    expect(focused?.findAncestorWidgetOfExactType<NavigationBar>(), isNotNull);
+    expect(focused?.findAncestorWidgetOfExactType<DpadFocusable>(), isNotNull);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
