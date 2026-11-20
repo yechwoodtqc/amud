@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:amud/core/dpad_navigation.dart';
+import 'package:amud/app.dart';
+import 'package:amud/features/settings/nav_tabs_screen.dart';
 import 'package:amud/core/dpad_focus.dart';
 
 void main() {
@@ -164,15 +166,11 @@ void main() {
       builder: (context, child) => DpadNavigation(child: child!),
       home: Scaffold(
         body: TextButton(autofocus: true, onPressed: _noop, child: const Text('Above navigation')),
-        bottomNavigationBar: NavigationBar(
-          height: 48,
-          onDestinationSelected: (value) => selected = value,
-          selectedIndex: 0,
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.menu_book), label: 'Siddur'),
-            NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-          ],
+        bottomNavigationBar: DpadNavigationBar(
+          items: [NavItem.of('home')!, NavItem.of('siddur')!, NavItem.of('settings')!],
+          selected: 0,
+          labels: true,
+          onTap: (value) => selected = value,
         ),
       ),
     ));
