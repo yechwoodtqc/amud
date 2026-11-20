@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'core/analytics.dart';
 import 'core/dpad_navigation.dart';
+import 'core/dpad_focus.dart';
 import 'features/integrations/reader_device.dart';
 import 'features/personal_dates/personal_dates_screen.dart';
 import 'features/js_cards/card_gallery_screen.dart';
