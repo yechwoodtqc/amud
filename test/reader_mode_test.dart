@@ -123,7 +123,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(
       LogicalKeyboardKey.goBack,
-      physicalKey: PhysicalKeyboardKey.browserBack,
+      physicalKey: PhysicalKeyboardKey.escape,
     );
     await tester.pump();
     expect(log, ['exit']);
