@@ -48,6 +48,7 @@ class CalendarView extends ConsumerWidget {
     final s = ref.watch(settingsProvider);
     final theme = Theme.of(context);
     final colors = SiddurColors.of(context);
+    final small = compact || MediaQuery.sizeOf(context).height < 520 || MediaQuery.sizeOf(context).width < 280;
     final loc = ref.watch(locationProvider);
 
     final byAbs = <int, List<Event>>{};
@@ -83,7 +84,7 @@ class CalendarView extends ConsumerWidget {
           IconButton(visualDensity: VisualDensity.compact, constraints: const BoxConstraints.tightFor(width: 36, height: 36), padding: EdgeInsets.zero, onPressed: () => shift(-1), icon: const Icon(Icons.chevron_left, size: 20)),
           Expanded(
             child: Column(children: [
-              Text(formatMonth(ym.$1, ym.$2), style: theme.textTheme.titleLarge),
+              Text(formatMonth(ym.$1, ym.$2), style: small ? theme.textTheme.titleMedium : theme.textTheme.titleLarge),
               Text(hebRange, style: theme.textTheme.bodySmall),
             ]),
           ),
@@ -98,7 +99,7 @@ class CalendarView extends ConsumerWidget {
           crossAxisCount: 7,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: compact ? 1.0 : 1.05,
+          childAspectRatio: small ? 1.15 : 1.05,
           children: [
             for (var i = 0; i < lead; i++) const SizedBox.shrink(),
             for (var d = 1; d <= days; d++)
@@ -136,13 +137,13 @@ class CalendarView extends ConsumerWidget {
               }),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 6),
         Card(
-          elevation: compact ? 0 : null,
-          color: compact ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5) : null,
-          margin: compact ? EdgeInsets.zero : null,
+          elevation: small ? 0 : null,
+          color: small ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5) : null,
+          margin: small ? EdgeInsets.zero : null,
           child: Padding(
-            padding: EdgeInsets.all(compact ? 12 : 16),
+            padding: EdgeInsets.all(small ? 8 : 16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(formatPlainDate(selected), style: theme.textTheme.titleMedium),
               Text('${selHd.render(context.hebcalLocale)} · ${keepTogether(selHd.renderGematriya())}', style: theme.textTheme.bodyMedium),
