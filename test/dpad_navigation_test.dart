@@ -127,7 +127,7 @@ void main() {
 
     await tester.sendKeyEvent(
       LogicalKeyboardKey.goBack,
-      physicalKey: PhysicalKeyboardKey.browserBack,
+      physicalKey: PhysicalKeyboardKey.escape,
     );
     await tester.pumpAndSettle();
     expect(find.text('Open'), findsOneWidget);
