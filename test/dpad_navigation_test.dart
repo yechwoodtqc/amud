@@ -158,6 +158,33 @@ void main() {
     expect(find.text('Open End Call target'), findsOneWidget);
   });
 
+  testWidgets('bottom navigation destinations receive focus and activate with D-pad', (tester) async {
+    var selected = -1;
+    await tester.pumpWidget(MaterialApp(
+      builder: (context, child) => DpadNavigation(child: child!),
+      home: Scaffold(
+        body: TextButton(autofocus: true, onPressed: _noop, child: const Text('Above navigation')),
+        bottomNavigationBar: NavigationBar(
+          height: 48,
+          onDestinationSelected: (value) => selected = value,
+          selectedIndex: 0,
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+            NavigationDestination(icon: Icon(Icons.menu_book), label: 'Siddur'),
+            NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+          ],
+        ),
+      ),
+    ));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    final focused = FocusManager.instance.primaryFocus?.context;
+    expect(focused?.findAncestorWidgetOfExactType<NavigationBar>(), isNotNull);
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await tester.pump();
+    expect(selected, 1);
+  });
+
   testWidgets('D-pad Up and Down leave a text field for the next control', (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: DpadNavigation(
