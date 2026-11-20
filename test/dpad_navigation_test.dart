@@ -154,7 +154,7 @@ void main() {
     expect(find.text('End Call target'), findsOneWidget);
     await tester.sendKeyEvent(
       LogicalKeyboardKey.endCall,
-      physicalKey: PhysicalKeyboardKey.browserBack,
+      physicalKey: PhysicalKeyboardKey.escape,
     );
     await tester.pumpAndSettle();
     expect(find.text('Open End Call target'), findsOneWidget);
