@@ -328,16 +328,14 @@ Future<T?> showAdaptivePicker<T>(BuildContext context,
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 for (final (i, (v, label)) in options.indexed)
-                  Focus(
-                    autofocus: i == focusIndex,
-                    child: ListTile(
+                  ListTile(
+                      autofocus: i == focusIndex,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                       title: Text(label,
                           style: v == selected ? TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600) : null),
                       trailing: v == selected ? Icon(Icons.check, color: theme.colorScheme.primary) : null,
                       onTap: () => Navigator.pop(ctx, v),
                     ),
-                  ),
               ],
             ),
           ),
