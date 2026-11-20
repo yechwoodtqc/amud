@@ -13,8 +13,6 @@ import '../js_cards/js_card.dart';
 import '../torah/shnayim_mikra.dart';
 import '../torah/torah_library.dart';
 import '../torah/torah_settings.dart';
-import '../voice/offline_voice.dart';
-import '../voice/voice_model.dart';
 
 /// Everything the app keeps for offline use in one place: what's built in,
 /// what's downloaded and the room it takes, a button to download the texts
@@ -27,53 +25,6 @@ class OfflineScreen extends ConsumerStatefulWidget {
 }
 
 class _OfflineScreenState extends ConsumerState<OfflineScreen> {
-  late final _voice = OfflineVoiceBackend(ref.read(storageProvider));
-  bool _voiceReady = false;
-  int _voiceBytes = 0;
-  double? _voiceProgress;
-  bool _voiceFailed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkVoice();
-  }
-
-  @override
-  void dispose() {
-    _voice.dispose();
-    super.dispose();
-  }
-
-  Future<void> _checkVoice() async {
-    try {
-      final ready = await _voice.ready();
-      final bytes = await _voice.size();
-      if (mounted) {
-        setState(() {
-          _voiceReady = ready;
-          _voiceBytes = bytes;
-        });
-      }
-    } catch (_) {}
-  }
-
-  Future<void> _downloadVoice() async {
-    setState(() {
-      _voiceProgress = 0;
-      _voiceFailed = false;
-    });
-    try {
-      await _voice.install((p) {
-        if (mounted) setState(() => _voiceProgress = p);
-      });
-    } catch (_) {
-      if (mounted) setState(() => _voiceFailed = true);
-    }
-    if (mounted) setState(() => _voiceProgress = null);
-    await _checkVoice();
-  }
-
   Future<bool> _confirm(String title, String size) async =>
       await showDialog<bool>(
         context: context,
@@ -121,7 +72,7 @@ class _OfflineScreenState extends ConsumerState<OfflineScreen> {
     // The texts listed here: the books, Shnayim Mikra and Rashi if shown.
     final fiveBooks = [ref.read(chumashDownloadProvider.notifier), if (showRashi) ref.read(rashiDownloadProvider.notifier)];
     final allTexts = missing.fold<int>(0, (n, w) => n + w.estimatedBytes) + fiveBooks.fold<int>(0, (n, b) => n + b.missingBytes);
-    final total = works.fold<int>(0, (n, w) => n + stored(w)) + chumash.bytes + rashi.bytes + _voiceBytes + fonts.fold<int>(0, (n, f) => n + f.bytes) + cardBytes;
+    final total = works.fold<int>(0, (n, w) => n + stored(w)) + chumash.bytes + rashi.bytes + fonts.fold<int>(0, (n, f) => n + f.bytes) + cardBytes;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.tr('Offline & storage'))),
@@ -195,36 +146,6 @@ class _OfflineScreenState extends ConsumerState<OfflineScreen> {
                 },
               ),
             ),
-        ]),
-        AdaptiveSection(header: context.tr('Voice commands'), children: [
-          ListTile(
-            leading: Icon(_voiceReady ? Icons.offline_pin : Icons.mic_none, color: _voiceReady ? theme.colorScheme.primary : null),
-            title: Text(context.tr('Voice model')),
-            subtitle: _voiceProgress != null
-                ? LinearProgressIndicator(value: _voiceProgress)
-                : Text(_voiceReady
-                    ? context.tr('Downloaded · {size}', {'size': formatBytes(_voiceBytes)})
-                    : _voiceBytes > 0
-                        ? context.tr('{done} of {size} downloaded. Continue where it stopped.',
-                            {'done': formatBytes(_voiceBytes), 'size': formatBytes(voiceModelBytes)})
-                        : _voiceFailed
-                            ? context.tr('Download failed. Check your connection and try again.')
-                            : context.tr('≈ {size} download', {'size': formatBytes(voiceModelBytes)})),
-            trailing: _voiceProgress != null
-                ? null
-                : _voiceReady
-                    ? IconButton(
-                        tooltip: context.tr('Remove'),
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () async {
-                          if (await _confirm(context.tr('Voice model'), formatBytes(_voiceBytes))) {
-                            await _voice.remove();
-                            await _checkVoice();
-                          }
-                        },
-                      )
-                    : IconButton(tooltip: context.tr('Download'), icon: const Icon(Icons.download), onPressed: _downloadVoice),
-          ),
         ]),
         if (fonts.isNotEmpty)
           AdaptiveSection(header: context.tr('Saved fonts'), children: [
