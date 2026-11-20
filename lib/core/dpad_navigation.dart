@@ -25,6 +25,7 @@ class DpadNavigation extends StatelessWidget {
           bindings: {
             const SingleActivator(LogicalKeyboardKey.goBack): _popFocusedRoute,
             const SingleActivator(LogicalKeyboardKey.endCall): _popFocusedRoute,
+            const SingleActivator(LogicalKeyboardKey.browserBack): _popFocusedRoute,
             const SingleActivator(LogicalKeyboardKey.escape): _popFocusedRoute,
           },
           child: Shortcuts(
