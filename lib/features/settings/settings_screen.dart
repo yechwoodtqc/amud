@@ -53,7 +53,10 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: context.tr(allOpen ? 'Collapse all' : 'Expand all'),
-            icon: Icon(allOpen ? Icons.unfold_less : Icons.unfold_more),
+            icon: Icon(allOpen ? Icons.unfold_less : Icons.unfold_more, size: 18),
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+            padding: EdgeInsets.zero,
             onPressed: () => set((x) => x.copyWith(expandedSettings: allOpen ? const [] : _sections)),
           ),
         ],
