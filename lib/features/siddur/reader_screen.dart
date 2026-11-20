@@ -272,15 +272,19 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
 
     final title = node == null ? context.term(widget.book) : context.prayerTitle(s, node.en, node.he);
     final bar = AppBar(
+        toolbarHeight: 48,
+        leadingWidth: 40,
+        titleSpacing: 4,
         title: Builder(builder: (context) {
           final heTitle = context.prayerTitleIsHebrew(s);
           final sub = node == null ? null : context.prayerSubtitle(s, node.en, node.he);
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, overflow: TextOverflow.ellipsis, style: node != null && heTitle ? TextStyle(fontFamily: s.hebrewFont) : null),
-            if (sub != null)
-              Text(sub,
+            Text(title, maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: (node != null && heTitle ? TextStyle(fontFamily: s.hebrewFont) : theme.textTheme.titleSmall)?.copyWith(fontSize: 15)),
+            if (sub != null && MediaQuery.sizeOf(context).width >= 360)
+              Text(sub, maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(fontFamily: heTitle ? null : s.hebrewFont),
+                  style: theme.textTheme.labelSmall?.copyWith(fontSize: 10, fontFamily: heTitle ? null : s.hebrewFont),
                   textDirection: heTitle ? null : TextDirection.rtl),
           ]);
         }),
@@ -422,8 +426,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
 
   void _pageOffset(int direction) {
     if (!_scroll.isAttached) return;
-    _offsetScroll.animateScroll(offset: direction * MediaQuery.sizeOf(context).height * 0.8,
-        duration: const Duration(milliseconds: 220), curve: Curves.easeOut);
+    // Hardware Up/Down advances by roughly one printed text line, not most
+    // of a screen. This prevents a fast D-pad press from skipping unread
+    // passages on a small feature-phone display.
+    _offsetScroll.animateScroll(
+      offset: direction * 28.0,
+      duration: const Duration(milliseconds: 110),
+      curve: Curves.linear,
+    );
   }
 
   Widget _listView(BuildContext context, List<Widget Function(BuildContext)> rows, SchemaNode? node) {
