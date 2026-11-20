@@ -23,12 +23,9 @@ class DpadNavigation extends StatelessWidget {
           // Resolve the Navigator from the currently focused control so this
           // works in the active nested tab, dialog, or pushed reader route.
           bindings: {
-            const SingleActivator(LogicalKeyboardKey.goBack): () {
-              final focusedContext = FocusManager.instance.primaryFocus?.context;
-              if (focusedContext == null) return;
-              final navigator = Navigator.maybeOf(focusedContext);
-              if (navigator != null) unawaited(navigator.maybePop().then<void>((_) {}));
-            },
+            const SingleActivator(LogicalKeyboardKey.goBack): _popFocusedRoute,
+            const SingleActivator(LogicalKeyboardKey.endCall): _popFocusedRoute,
+            const SingleActivator(LogicalKeyboardKey.escape): _popFocusedRoute,
           },
           child: Shortcuts(
             shortcuts: const {
@@ -48,3 +45,11 @@ class DpadNavigation extends StatelessWidget {
         ),
       );
 }
+
+void _popFocusedRoute() {
+              final focusedContext = FocusManager.instance.primaryFocus?.context;
+              if (focusedContext == null) return;
+              final navigator = Navigator.maybeOf(focusedContext);
+              if (navigator != null) unawaited(navigator.maybePop().then<void>((_) {}));
+            }
+
