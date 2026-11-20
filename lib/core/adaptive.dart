@@ -303,36 +303,47 @@ Future<T?> showAdaptivePicker<T>(BuildContext context,
       ),
     );
   }
-  // Above the tab bar, with a heading that stands apart from the options.
-  return showModalBottomSheet<T>(
-    context: context,
-    useRootNavigator: true,
-    showDragHandle: true,
-    isScrollControlled: true,
-    builder: (ctx) {
-      final theme = Theme.of(ctx);
-      return SafeArea(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.7),
-          child: ListView(shrinkWrap: true, children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-              child: Text(title, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+  // Android feature phones need a full, opaque page rather than a sheet
+  // over the settings screen. This also gives D-pad users a clear Back target
+  // and a predictable focus starting point.
+  return Navigator.of(context, rootNavigator: true).push<T>(
+    MaterialPageRoute<T>(
+      fullscreenDialog: true,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        final selectedIndex = options.indexWhere((o) => o.$1 == selected);
+        final focusIndex = selectedIndex < 0 ? 0 : selectedIndex;
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 40,
+            leading: IconButton(
+              tooltip: ctx.tr('Back'),
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(ctx),
             ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-            const SizedBox(height: 4),
-            for (final (v, label) in options)
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                title: Text(label,
-                    style: v == selected ? TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600) : null),
-                trailing: v == selected ? Icon(Icons.check, color: theme.colorScheme.primary) : null,
-                onTap: () => Navigator.pop(ctx, v),
-              ),
-          ]),
-        ),
-      );
-    },
+            title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                for (final (i, (v, label)) in options.indexed)
+                  Focus(
+                    autofocus: i == focusIndex,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      title: Text(label,
+                          style: v == selected ? TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600) : null),
+                      trailing: v == selected ? Icon(Icons.check, color: theme.colorScheme.primary) : null,
+                      onTap: () => Navigator.pop(ctx, v),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
   );
 }
 
