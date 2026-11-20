@@ -7,7 +7,7 @@ on:
       - compat/android6-api23
 
 concurrency:
-  group: android6-compat-${{ github.ref }}
+  group: android6-compat-v2-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
