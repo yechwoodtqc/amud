@@ -48,7 +48,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(tester.getSize(find.byType(SearchBar)).height, lessThanOrEqualTo(32));
-    expect(tester.getSize(find.byType(DpadNavigationBar)).height, 48);
+    expect(tester.getSize(find.byKey(const Key('dpad-bottom-navigation-size'))).height, 48);
   });
 }
 
