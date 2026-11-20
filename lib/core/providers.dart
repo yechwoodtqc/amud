@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:archive/archive.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hebcal/hebcal.dart';
 import 'package:siddur_engine/siddur_engine.dart';
@@ -22,7 +23,19 @@ class _BundleSource implements TextSource {
 
 List<int> _gunzip(List<int> bytes) => const GZipDecoder().decodeBytes(bytes);
 
-final libraryProvider = Provider<SiddurLibrary>((ref) => SiddurLibrary(_BundleSource(), _gunzip));
+Map<String, dynamic> _decodeLibraryJson((List<int>, bool) input) {
+  final bytes = input.$2 ? _gunzip(input.$1) : input.$1;
+  return jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+}
+
+Future<Map<String, dynamic>> _loadLibraryJson(String file) async {
+  final bytes = await Content.read(file);
+  return compute(_decodeLibraryJson, (bytes, file.endsWith('.gz')));
+}
+
+final libraryProvider = Provider<SiddurLibrary>(
+  (ref) => SiddurLibrary(_BundleSource(), _gunzip, loadJson: _loadLibraryJson),
+);
 
 final manifestProvider = FutureProvider<Manifest>((ref) => ref.watch(libraryProvider).manifest());
 
@@ -72,7 +85,7 @@ final corpusProvider = FutureProvider.family<Corpus?, String>((ref, bookTitle) a
   } catch (_) {
     return null; // Not tagged yet: the engine's own analysis is used.
   }
-  return Corpus.fromJson(jsonDecode(utf8.decode(_gunzip(bytes))) as Map<String, Object?>);
+  return Corpus.fromJson(await compute(_decodeLibraryJson, (bytes, true)));
 });
 
 final resolverProvider = FutureProvider.family<SiddurResolver, String>((ref, bookTitle) async {
