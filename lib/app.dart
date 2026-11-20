@@ -454,7 +454,7 @@ class AdaptiveShell extends ConsumerWidget {
       body: _swipeable(focus, items),
       bottomNavigationBar: away(
         vertical: true,
-        _DpadNavigationBar(items: items, selected: selected, labels: labels, onTap: onTap),
+        DpadNavigationBar(items: items, selected: selected, labels: labels, onTap: onTap),
       ),
     );
   }
@@ -464,13 +464,13 @@ class AdaptiveShell extends ConsumerWidget {
 /// Compact Material tab bar with explicit focus order and a visible D-pad
 /// outline. NavigationBar's internal focus group did not move reliably on
 /// directional keypads, so each destination owns its focus and activation.
-class _DpadNavigationBar extends StatelessWidget {
+class DpadNavigationBar extends StatelessWidget {
   final List<NavItem> items;
   final int selected;
   final bool labels;
   final ValueChanged<int> onTap;
 
-  const _DpadNavigationBar({
+  const DpadNavigationBar({
     required this.items,
     required this.selected,
     required this.labels,
