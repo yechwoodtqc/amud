@@ -383,11 +383,13 @@ class _GemaraReaderScreenState extends ConsumerState<GemaraReaderScreen> with Fo
       toolbarHeight: 48,
       leadingWidth: 40,
       titleSpacing: 4,
-      title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
-        Text(views.firstWhere((v) => v.$1 == view).$3, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall),
-      ]),
-      actions: fitBarActions(context, title, spare: const [4, 3, 1, 2], [
+      title: MediaQuery.sizeOf(context).width < 360
+          ? const SizedBox.shrink()
+          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
+              Text(views.firstWhere((v) => v.$1 == view).$3, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall),
+            ]),
+      actions: fitBarActions(context, MediaQuery.sizeOf(context).width < 360 ? '' : title, spare: const [4, 3, 1, 2], [
         BarTool.custom(PopupMenuButton<GemaraView>(
           tooltip: context.tr('View'),
           icon: Icon(views.firstWhere((v) => v.$1 == view).$2),
