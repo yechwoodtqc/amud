@@ -20,6 +20,7 @@ const _channel = AndroidNotificationDetails(
   importance: Importance.high,
   priority: Priority.high,
   category: AndroidNotificationCategory.reminder,
+  icon: 'ic_stat_amud',
 );
 const _details = NotificationDetails(
   android: _channel,
@@ -32,6 +33,7 @@ const _updateDetails = NotificationDetails(
     'updates',
     'App updates',
     channelDescription: 'When a new version of the app is available',
+    icon: 'ic_stat_amud',
     importance: Importance.defaultImportance,
   ),
   iOS: DarwinNotificationDetails(),
@@ -53,7 +55,7 @@ class _NativeBackend implements NotificationBackend {
   Future<void> init() async {
     if (_ready) return;
     await _plugin.initialize(const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      android: AndroidInitializationSettings('@drawable/ic_stat_amud'),
       iOS: DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
