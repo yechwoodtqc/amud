@@ -341,7 +341,7 @@ Future<void> _configure(
                             alignment: AlignmentDirectional.centerStart,
                             child: SizedBox(
                               width: widthOf(draft.span).clamp(0, box.maxWidth).toDouble(),
-                              child: AbsorbPointer(child: t.build(ctx, ref, draft)),
+                              child: ExcludeFocus(child: AbsorbPointer(child: t.build(ctx, ref, draft))),
                             ),
                           ),
                         ),
