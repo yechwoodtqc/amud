@@ -132,6 +132,32 @@ void main() {
     expect(find.text('Open'), findsOneWidget);
   });
 
+  testWidgets('End Call key pops the currently focused route', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      builder: (context, child) => DpadNavigation(child: child!),
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            autofocus: true,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const Scaffold(body: Text('End Call target')),
+            )),
+            child: const Text('Open End Call target'),
+          ),
+        ),
+      ),
+    ));
+    await tester.tap(find.text('Open End Call target'));
+    await tester.pumpAndSettle();
+    expect(find.text('End Call target'), findsOneWidget);
+    await tester.sendKeyEvent(
+      LogicalKeyboardKey.endCall,
+      physicalKey: PhysicalKeyboardKey.browserBack,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Open End Call target'), findsOneWidget);
+  });
+
   testWidgets('D-pad Up and Down leave a text field for the next control', (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: DpadNavigation(
