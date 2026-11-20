@@ -13,6 +13,7 @@ import '../../../core/l10n.dart';
 import '../../gemara/gemara_home_screen.dart' show learningPath;
 import '../../../core/providers.dart';
 import '../../../core/settings.dart';
+import '../../../core/split_row.dart';
 import '../../../core/theme.dart';
 import '../../../core/titles.dart';
 import '../../alerts/alerts.dart';
