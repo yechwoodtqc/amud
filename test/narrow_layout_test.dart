@@ -289,8 +289,8 @@ void main() {
       await t.pump();
       await t.tap(find.text('Kiddush Levanah window'), warnIfMissed: false);
       await t.pumpAndSettle(const Duration(milliseconds: 100), EnginePhase.sendSemanticsUpdate, const Duration(seconds: 5));
-      expect(find.text('Kiddush Levanah window'), findsNWidgets(2));
-      final preview = find.ancestor(of: find.text('Kiddush Levanah window').last, matching: find.byType(Card));
+      expect(find.text('Kiddush Levanah window'), findsOneWidget);
+      final preview = find.ancestor(of: find.text('Kiddush Levanah window').first, matching: find.byType(Card));
       final wide = t.getSize(preview).width;
       await t.tap(find.text('Compact'));
       await t.pump();
