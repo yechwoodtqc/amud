@@ -275,7 +275,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
         toolbarHeight: 48,
         leadingWidth: 40,
         titleSpacing: 4,
-        title: Builder(builder: (context) {
+        title: MediaQuery.sizeOf(context).width < 360
+            ? const SizedBox.shrink()
+            : Builder(builder: (context) {
           final heTitle = context.prayerTitleIsHebrew(s);
           final sub = node == null ? null : context.prayerSubtitle(s, node.en, node.he);
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -404,7 +406,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
   /// prayer's name isn't cut to "Shach…". The compass itself stays.
   List<Widget> _barActions(BuildContext context, String title, HDate date, bool picked) {
     final compass = ref.watch(readerCompassTurnProvider) != null;
-    return fitBarActions(context, title, spare: compass ? const [2, 1, 3, 4] : const [1, 0, 2], [
+    return fitBarActions(context, MediaQuery.sizeOf(context).width < 360 ? '' : title,
+        spare: compass ? const [2, 1, 3, 4] : const [1, 0, 2], [
         if (compass) const BarTool.custom(ReaderCompass()),
         BarTool(tooltip: context.tr('Why today?'), icon: const Icon(Icons.help_outline), onPressed: () => openDayGuide(context, date)),
         BarTool(
