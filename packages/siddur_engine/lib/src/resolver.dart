@@ -19,32 +19,46 @@ abstract class TextSource {
 /// Decodes gzip bytes. Injected so the engine stays free of dart:io.
 typedef Gunzip = List<int> Function(List<int> bytes);
 
+/// Optional asynchronous JSON loader, implemented by Flutter with an isolate
+/// so large compressed prayer files never monopolize the UI thread.
+typedef JsonLoader = Future<Map<String, dynamic>> Function(String file);
+
 /// Loads books, versions and per-book rule overrides, with caching.
 class SiddurLibrary {
   final TextSource source;
   final Gunzip gunzip;
   final String baseDir;
+  final JsonLoader? loadJson;
   Manifest? _manifest;
   final _indexes = <String, SchemaNode>{};
   final _texts = <String, Future<TextVersion>>{};
 
-  SiddurLibrary(this.source, this.gunzip, {this.baseDir = 'assets/sefaria'});
+  SiddurLibrary(this.source, this.gunzip, {this.baseDir = 'assets/sefaria', this.loadJson});
 
-  Future<Manifest> manifest() async =>
-      _manifest ??= Manifest.fromJson(jsonDecode(utf8.decode(await source.readBytes('$baseDir/manifest.json')))
-          as Map<String, dynamic>);
+  Future<Manifest> manifest() async {
+    if (_manifest case final cached?) return cached;
+    final file = '$baseDir/manifest.json';
+    final json = loadJson == null
+        ? jsonDecode(utf8.decode(await source.readBytes(file))) as Map<String, dynamic>
+        : await loadJson!(file);
+    return _manifest = Manifest.fromJson(json);
+  }
 
   Future<SchemaNode> index(BookInfo book) async {
     final cached = _indexes[book.slug];
     if (cached != null) return cached;
-    final j = jsonDecode(utf8.decode(gunzip(await source.readBytes('$baseDir/${book.indexFile}'))))
-        as Map<String, dynamic>;
+    final file = '$baseDir/${book.indexFile}';
+    final j = loadJson == null
+        ? jsonDecode(utf8.decode(gunzip(await source.readBytes(file)))) as Map<String, dynamic>
+        : await loadJson!(file);
     return _indexes[book.slug] = SchemaNode.parse(j['schema'] as Map<String, dynamic>);
   }
 
   Future<TextVersion> version(VersionInfo v) => _texts.putIfAbsent(v.file, () async {
-        final j = jsonDecode(utf8.decode(gunzip(await source.readBytes('$baseDir/${v.file}'))))
-            as Map<String, dynamic>;
+        final file = '$baseDir/${v.file}';
+        final j = loadJson == null
+            ? jsonDecode(utf8.decode(gunzip(await source.readBytes(file)))) as Map<String, dynamic>
+            : await loadJson!(file);
         final text = j['text'];
         _patch(v.versionTitle.trim(), text);
         return TextVersion(v, text);
