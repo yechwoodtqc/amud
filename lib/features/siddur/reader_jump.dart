@@ -80,11 +80,11 @@ class _ReaderJumpBarState extends ConsumerState<ReaderJumpBar> {
     return Material(
       color: theme.colorScheme.surface,
       child: SizedBox(
-        height: 48,
+        height: 36,
         // Every chip is built (not lazily), so any can be scrolled into view.
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+          padding: const EdgeInsets.fromLTRB(8, 1, 8, 1),
           child: Row(children: [
             for (final (i, p) in widget.points.indexed) ...[
               if (p.part)
