@@ -494,7 +494,7 @@ class DpadNavigationBar extends StatelessWidget {
                     order: NumericFocusOrder(i.toDouble()),
                     child: DpadFocusable(
                       key: ValueKey('bottom-nav-${item.id}'),
-                      autofocus: i == selected,
+                      autofocus: false,
                       onActivate: () => onTap(i),
                       borderRadius: BorderRadius.circular(10),
                       child: Tooltip(
