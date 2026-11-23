@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hebcal/hebcal.dart';
 
@@ -111,7 +112,26 @@ class CalendarView extends ConsumerWidget {
                 final chag = evs.any((e) => e.hasFlag(Flags.chag));
                 final isSel = pd == selected;
                 final isToday = pd == today;
-                return InkWell(
+                return Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+                      return KeyEventResult.ignored;
+                    }
+                    final delta = switch (event.logicalKey) {
+                      LogicalKeyboardKey.arrowLeft => -1,
+                      LogicalKeyboardKey.arrowRight => 1,
+                      LogicalKeyboardKey.arrowUp => -7,
+                      LogicalKeyboardKey.arrowDown => 7,
+                      _ => 0,
+                    };
+                    if (delta == 0) return KeyEventResult.ignored;
+                    final nextDate = DateTime(pd.year, pd.month, pd.day + delta);
+                    final next = PlainDate(nextDate.year, nextDate.month, nextDate.day);
+                    ref.read(_monthProvider.notifier).state = (next.year, next.month);
+                    ref.read(_selectedProvider.notifier).state = next;
+                    return KeyEventResult.handled;
+                  },
+                  child: InkWell(
                   autofocus: isSel,
                   borderRadius: BorderRadius.circular(8),
                   onTap: () => ref.read(_selectedProvider.notifier).state = pd,
@@ -132,6 +152,7 @@ class CalendarView extends ConsumerWidget {
                       if (holiday) Container(width: 5, height: 5, decoration: BoxDecoration(color: colors.todayBar, shape: BoxShape.circle)),
                     ]),
                     ),
+                  ),
                   ),
                 );
               }),
