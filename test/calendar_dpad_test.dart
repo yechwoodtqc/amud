@@ -51,6 +51,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('20'), findsOneWidget);
+
+    // Establish focus explicitly: the calendar can be opened from routes
+    // whose prior focus is elsewhere, so the test must not assume autofocus
+    // has already moved to today's cell.
+    await tester.tap(find.text('20'));
+    await tester.pump();
     expect(Focus.of(tester.element(find.text('20'))).hasFocus, isTrue);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
