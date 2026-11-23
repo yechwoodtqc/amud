@@ -352,11 +352,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
           if (event is! KeyDownEvent && event is! KeyRepeatEvent) return KeyEventResult.ignored;
           final key = event.logicalKey;
           if (key == LogicalKeyboardKey.arrowDown) {
-            _pageOffset(1);
+            _pageOffset(1, held: event is KeyRepeatEvent);
             return KeyEventResult.handled;
           }
           if (key == LogicalKeyboardKey.arrowUp) {
-            _pageOffset(-1);
+            _pageOffset(-1, held: event is KeyRepeatEvent);
             return KeyEventResult.handled;
           }
           if (key == LogicalKeyboardKey.select ||
@@ -435,18 +435,18 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> with FocusModeReade
       ]);
   }
 
-  void _pageOffset(int direction) {
+  void _pageOffset(int direction, {bool held = false}) {
     if (!_scroll.isAttached) return;
-    // Hardware Up/Down advances by roughly one printed text line, not most
-    // of a screen. This prevents a fast D-pad press from skipping unread
-    // passages on a small feature-phone display.
+    // A single press advances about one printed line. Holding the key uses
+    // a much larger stride so long passages can be traversed comfortably.
     final settings = readerSettings(ref.read(settingsProvider), widget.book);
-    // Stay below a full line at every user-selected text size: repeated
-    // Down presses reveal the next line without jumping over unseen text.
-    final step = (TypeScale.of(settings).line * 0.85).clamp(14.0, 24.0).toDouble();
+    final line = TypeScale.of(settings).line;
+    final step = held
+        ? (line * 4.0).clamp(56.0, 112.0).toDouble()
+        : (line * 0.85).clamp(14.0, 24.0).toDouble();
     _offsetScroll.animateScroll(
       offset: direction * step,
-      duration: const Duration(milliseconds: 100),
+      duration: Duration(milliseconds: held ? 55 : 100),
       curve: Curves.linear,
     );
   }
