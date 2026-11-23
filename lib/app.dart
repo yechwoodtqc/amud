@@ -485,62 +485,59 @@ class DpadNavigationBar extends StatelessWidget {
       child: SizedBox(
         key: const Key('dpad-bottom-navigation-size'),
         height: labels ? 48 : 40,
-        child: FocusTraversalGroup(
-          policy: OrderedTraversalPolicy(),
-          child: Row(
-            children: [
-              for (final (i, item) in items.indexed)
-                Expanded(
-                  child: FocusTraversalOrder(
-                    order: NumericFocusOrder(i.toDouble()),
-                    child: DpadFocusable(
-                      key: ValueKey('bottom-nav-${item.id}'),
-                      autofocus: i == selected,
-                      onActivate: () => onTap(i),
+        // Keep these focus targets in the app-wide traversal group. A nested
+        // OrderedTraversalPolicy isolated the tab buttons from the page, so
+        // Down could scroll forever without ever reaching the bottom bar.
+        child: Row(
+          children: [
+            for (final (i, item) in items.indexed)
+              Expanded(
+                child: DpadFocusable(
+                  key: ValueKey('bottom-nav-${item.id}'),
+                  autofocus: i == selected,
+                  onActivate: () => onTap(i),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Tooltip(
+                    message: context.tr(item.label),
+                    child: InkWell(
+                      canRequestFocus: false,
                       borderRadius: BorderRadius.circular(10),
-                      child: Tooltip(
-                        message: context.tr(item.label),
-                        child: InkWell(
-                          canRequestFocus: false,
+                      onTap: () => onTap(i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 120),
+                        padding: EdgeInsets.symmetric(horizontal: 2, vertical: labels ? 2 : 6),
+                        decoration: BoxDecoration(
+                          color: i == selected ? theme.colorScheme.secondaryContainer : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
-                          onTap: () => onTap(i),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 120),
-                            padding: EdgeInsets.symmetric(horizontal: 2, vertical: labels ? 2 : 6),
-                            decoration: BoxDecoration(
-                              color: i == selected ? theme.colorScheme.secondaryContainer : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              i == selected ? item.selected : item.outlined,
+                              size: 16,
+                              color: i == selected ? theme.colorScheme.onSecondaryContainer : theme.colorScheme.onSurfaceVariant,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  i == selected ? item.selected : item.outlined,
-                                  size: 16,
+                            if (labels)
+                              Text(
+                                context.tr(item.label),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  height: 1.1,
                                   color: i == selected ? theme.colorScheme.onSecondaryContainer : theme.colorScheme.onSurfaceVariant,
                                 ),
-                                if (labels)
-                                  Text(
-                                    context.tr(item.label),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      fontSize: 10,
-                                      height: 1.1,
-                                      color: i == selected ? theme.colorScheme.onSecondaryContainer : theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
