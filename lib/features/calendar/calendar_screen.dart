@@ -125,16 +125,30 @@ class CalendarView extends ConsumerWidget {
                       _ => 0,
                     };
                     if (delta == 0) return KeyEventResult.ignored;
+                    final direction = switch (delta) {
+                      -1 => TraversalDirection.left,
+                      1 => TraversalDirection.right,
+                      -7 => TraversalDirection.up,
+                      7 => TraversalDirection.down,
+                      _ => TraversalDirection.right,
+                    };
+                    // Move actual keyboard focus as well as the highlighted date.
+                    // This keeps the next key press on the newly selected cell.
+                    node.focusInDirection(direction);
                     final nextDate = DateTime(pd.year, pd.month, pd.day + delta);
                     final next = PlainDate(nextDate.year, nextDate.month, nextDate.day);
                     ref.read(_monthProvider.notifier).state = (next.year, next.month);
                     ref.read(_selectedProvider.notifier).state = next;
                     return KeyEventResult.handled;
                   },
-                  child: InkWell(
                   autofocus: isSel,
+                  child: Builder(builder: (focusContext) => InkWell(
+                  autofocus: false,
                   borderRadius: BorderRadius.circular(8),
-                  onTap: () => ref.read(_selectedProvider.notifier).state = pd,
+                  onTap: () {
+                    Focus.of(focusContext).requestFocus();
+                    ref.read(_selectedProvider.notifier).state = pd;
+                  },
                   child: Container(
                     margin: const EdgeInsets.all(1),
                     decoration: BoxDecoration(
@@ -154,6 +168,7 @@ class CalendarView extends ConsumerWidget {
                     ),
                   ),
                   ),
+                  )),
                 );
               }),
           ],
